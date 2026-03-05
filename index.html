@@ -143,6 +143,41 @@
     .setup-notice { background:rgba(196,154,42,.07); border:1px solid var(--brass-dim); border-radius:3px; padding:.7rem 1rem; margin-top:.6rem; font-size:.78rem; color:var(--text-dim); line-height:1.6; display:none; }
     .setup-notice strong { color:var(--accent); }
     .setup-notice code { background:var(--surface); border:1px solid var(--border); border-radius:2px; padding:.1rem .35rem; font-size:.8em; color:var(--text); }
+
+    /* ── MODE TOGGLE ── */
+    .mode-toggle { display:flex; gap:0; margin-top:1.25rem; border-radius:3px; overflow:hidden; border:1px solid var(--border); }
+    .mode-btn { flex:1; padding:.72rem; background:var(--surface); border:none; color:var(--text-dim); font-family:'Cinzel',serif; font-size:.75rem; font-weight:600; letter-spacing:.15em; text-transform:uppercase; cursor:pointer; transition:all .15s; border-right:1px solid var(--border); }
+    .mode-btn:last-child { border-right:none; }
+    .mode-btn.active { background:var(--panel2); color:var(--accent); }
+    .mode-btn.sim.active { background:linear-gradient(160deg,var(--red-dim),var(--red)); color:#fff; border-color:var(--red); }
+
+    /* ── SIM STATS ── */
+    .sim-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.75rem; }
+    @media(max-width:540px){ .sim-grid{ grid-template-columns:repeat(2,1fr); } }
+    .sim-box { background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:.9rem .5rem .7rem; text-align:center; }
+    .sim-box.featured { border-color:var(--red); background:var(--panel2); }
+    .sim-value { font-family:'Cinzel',serif; font-size:1.6rem; font-weight:800; color:var(--accent); line-height:1; }
+    .sim-box.featured .sim-value { color:var(--red-bright); font-size:2rem; }
+    .sim-label { font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); margin-top:.35rem; font-weight:600; }
+
+    /* ── HISTOGRAM ── */
+    .histogram-wrap { margin-top:1.1rem; padding-top:1rem; border-top:1px solid var(--border); }
+    .histogram-title { font-size:.65rem; letter-spacing:.16em; text-transform:uppercase; color:var(--text-dim); margin-bottom:.8rem; font-weight:700; }
+    .histogram { display:flex; align-items:flex-end; gap:2px; height:140px; width:100%; }
+    .hist-col { flex:1; display:flex; flex-direction:column; align-items:center; min-width:0; position:relative; cursor:default; }
+    .hist-bar { width:100%; border-radius:2px 2px 0 0; transition:background .15s; min-height:2px; }
+    .hist-bar.normal { background:var(--brass-dim); }
+    .hist-bar.normal:hover { background:var(--brass); }
+    .hist-bar.median { background:var(--red); }
+    .hist-bar.median:hover { background:var(--red-bright); }
+    .hist-xlabel { font-size:.52rem; color:var(--text-dim); margin-top:3px; text-align:center; }
+    .hist-tip { display:none; position:absolute; bottom:calc(100% + 5px); left:50%; transform:translateX(-50%); background:var(--panel2); border:1px solid var(--border); border-radius:3px; padding:.28rem .5rem; font-size:.7rem; color:var(--text); white-space:nowrap; z-index:20; pointer-events:none; font-family:'Rajdhani',sans-serif; font-weight:600; }
+    .hist-col:hover .hist-tip { display:block; }
+    .hist-legend { display:flex; gap:1.2rem; margin-top:.6rem; font-size:.66rem; color:var(--text-dim); align-items:center; }
+    .hist-legend span { display:flex; align-items:center; gap:.35rem; }
+    .hist-legend i { display:inline-block; width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+    .sim-note { font-size:.7rem; color:var(--text-dim); margin-top:.9rem; padding-top:.8rem; border-top:1px solid var(--border); line-height:1.6; }
+    .sim-note strong { color:var(--brass); }
   </style>
 </head>
 <body>
@@ -423,25 +458,59 @@
     </div>
   </div><!-- /columns -->
 
-  <button class="calc-btn" onclick="calculate()">⚔ CALCULATE AVERAGE DAMAGE ⚔</button>
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="btnAvg" onclick="setMode('avg')">⚔ Average (Math)</button>
+    <button class="mode-btn sim" id="btnSim" onclick="setMode('sim')">🎲 Simulate (10,000 Rolls)</button>
+  </div>
 
   <!-- RESULTS -->
   <div id="results">
     <div class="results-panel">
-      <div class="results-title">☠ Combat Resolution — Average Outcome</div>
-      <div class="stat-grid">
-        <div class="stat-box"><div class="stat-value" id="r-attacks">–</div><div class="stat-label">Total Attacks</div></div>
-        <div class="stat-box"><div class="stat-value" id="r-hits">–</div><div class="stat-label">Avg Hits</div></div>
-        <div class="stat-box"><div class="stat-value" id="r-wounds">–</div><div class="stat-label">Avg Wounds</div></div>
-        <div class="stat-box"><div class="stat-value" id="r-unsaved">–</div><div class="stat-label">Unsaved Wounds</div></div>
-        <div class="stat-box"><div class="stat-value" id="r-dmg">–</div><div class="stat-label">Avg Damage</div></div>
-        <div class="stat-box featured"><div class="stat-value" id="r-models">–</div><div class="stat-label">Max Models at Risk</div></div>
+
+      <!-- AVERAGE MODE -->
+      <div id="mode-avg">
+        <div class="results-title">☠ Combat Resolution — Average Outcome</div>
+        <div class="stat-grid">
+          <div class="stat-box"><div class="stat-value" id="r-attacks">–</div><div class="stat-label">Total Attacks</div></div>
+          <div class="stat-box"><div class="stat-value" id="r-hits">–</div><div class="stat-label">Avg Hits</div></div>
+          <div class="stat-box"><div class="stat-value" id="r-wounds">–</div><div class="stat-label">Avg Wounds</div></div>
+          <div class="stat-box"><div class="stat-value" id="r-unsaved">–</div><div class="stat-label">Unsaved Wounds</div></div>
+          <div class="stat-box"><div class="stat-value" id="r-dmg">–</div><div class="stat-label">Avg Damage</div></div>
+          <div class="stat-box featured"><div class="stat-value" id="r-models">–</div><div class="stat-label">Max Models at Risk</div></div>
+        </div>
+        <div class="flow" id="flow-row"></div>
+        <div class="breakdown">
+          <div class="breakdown-title">Step-by-step Probability Breakdown</div>
+          <div id="breakdown-rows"></div>
+        </div>
       </div>
-      <div class="flow" id="flow-row"></div>
-      <div class="breakdown">
-        <div class="breakdown-title">Step-by-step Probability Breakdown</div>
-        <div id="breakdown-rows"></div>
+
+      <!-- SIMULATION MODE -->
+      <div id="mode-sim" style="display:none;">
+        <div class="results-title">🎲 Monte Carlo Simulation — 10,000 Combat Runs</div>
+        <div class="sim-grid">
+          <div class="sim-box"><div class="sim-value" id="s-min">–</div><div class="sim-label">Min Damage</div></div>
+          <div class="sim-box featured"><div class="sim-value" id="s-avg">–</div><div class="sim-label">Avg Damage</div></div>
+          <div class="sim-box"><div class="sim-value" id="s-max">–</div><div class="sim-label">Max Damage</div></div>
+          <div class="sim-box"><div class="sim-value" id="s-med">–</div><div class="sim-label">Median</div></div>
+          <div class="sim-box"><div class="sim-value" id="s-stddev">–</div><div class="sim-label">Std Dev</div></div>
+          <div class="sim-box"><div class="sim-value" id="s-p50">–</div><div class="sim-label">≥ Avg% of runs</div></div>
+          <div class="sim-box"><div class="sim-value" id="s-zero">–</div><div class="sim-label">Zero Damage %</div></div>
+          <div class="sim-box featured"><div class="sim-value" id="s-models">–</div><div class="sim-label">Max Models at Risk</div></div>
+        </div>
+        <div class="histogram-wrap">
+          <div class="histogram-title">Damage Distribution — each bar = 1 damage value</div>
+          <div class="histogram" id="histogram"></div>
+          <div class="hist-legend">
+            <span><i style="background:var(--brass)"></i> Damage frequency</span>
+            <span><i style="background:var(--red)"></i> Median result</span>
+          </div>
+        </div>
+        <div class="sim-note">
+          <strong>How to read this:</strong> Each of the 10,000 runs rolls every die individually through the full attack sequence — attacks, hits, wounds, saves, damage, and FNP. The histogram shows how often each total damage value occurred. A tall bar means that outcome is common; a wide spread means the weapon is swingy.
+        </div>
       </div>
+
     </div>
   </div>
 
@@ -908,13 +977,320 @@ function calculate() {
     {k:'Max models at risk',               v:fmt(maxAtRisk)+' / '+defModels+' (capped at '+fmt(totalAtk)+' attacks)'},
   ].map(r=>`<div class="bd-row"><span class="bd-key">${r.k}</span><span class="bd-val ${r.cls||''}">${r.v}</span></div>`).join('');
 
+  document.getElementById('mode-avg').style.display='block';
+  document.getElementById('mode-sim').style.display='none';
   g('results').style.display='block';
   g('results').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 document.addEventListener('keydown', e=>{
-  if(e.key==='Enter'&&e.target.tagName!=='INPUT') calculate();
+  if(e.key==='Enter'&&e.target.tagName!=='INPUT') runMode();
 });
+
+// ═══════════════════════════════════════════════════════════
+//  MODE MANAGEMENT
+// ═══════════════════════════════════════════════════════════
+let currentMode = 'avg';
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('btnAvg').classList.toggle('active', mode === 'avg');
+  document.getElementById('btnSim').classList.toggle('active', mode === 'sim');
+  runMode();
+}
+
+function runMode() {
+  if (currentMode === 'avg') {
+    document.getElementById('mode-avg').style.display = 'block';
+    document.getElementById('mode-sim').style.display = 'none';
+    calculate();
+  } else {
+    document.getElementById('mode-avg').style.display = 'none';
+    document.getElementById('mode-sim').style.display = 'block';
+    simulate();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DICE HELPERS
+// ═══════════════════════════════════════════════════════════
+function dRoll(sides) { return Math.floor(Math.random() * sides) + 1; }
+
+function rollDice(type, fixedVal) {
+  switch(type) {
+    case 'd3':   return dRoll(3);
+    case 'd6':   return dRoll(6);
+    case '2d3':  return dRoll(3) + dRoll(3);
+    case '2d6':  return dRoll(6) + dRoll(6);
+    case 'd3+1': return dRoll(3) + 1;
+    case 'd3+3': return dRoll(3) + 3;
+    case 'd6+1': return dRoll(6) + 1;
+    case 'd6+2': return dRoll(6) + 2;
+    case 'd6+3': return dRoll(6) + 3;
+    default:     return parseInt(fixedVal) || 1;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ONE COMBAT RUN — rolls every die individually
+// ═══════════════════════════════════════════════════════════
+function runOneCombat(p) {
+  const critThreshold = p.critOn5 ? 5 : 6;
+  let totalDamage = 0;
+
+  // Total attacks
+  let totalAtk = rollDice(p.attacksType, p.attacksFixed) * p.numModels;
+  if (p.blast) {
+    if      (p.defModels >= 11) totalAtk = Math.max(totalAtk, p.numModels * 6);
+    else if (p.defModels >= 6)  totalAtk = Math.max(totalAtk, p.numModels * 3);
+  }
+
+  for (let atk = 0; atk < totalAtk; atk++) {
+
+    // ── TO HIT ──────────────────────────────────────────
+    let hitCount = 0;
+    let isCritHit = false;
+
+    if (p.torrent) {
+      hitCount = 1;
+    } else {
+      let skillNeeded = p.skill;
+      if (p.plusOneHit)     skillNeeded = Math.max(2, skillNeeded - 1);
+      if (p.minusOneHit)    skillNeeded = Math.min(6, skillNeeded + 1);
+      if (p.stealth)        skillNeeded = Math.min(6, skillNeeded + 1);
+      if (p.smokeLaunchers) skillNeeded = Math.min(6, skillNeeded + 1);
+      if (p.heavyWeapon)    skillNeeded = Math.max(2, skillNeeded - 1);
+
+      let roll = dRoll(6);
+      if      (roll === 1 && p.rerollHit1)             roll = dRoll(6);
+      else if (roll < skillNeeded && p.rerollHitAll)   roll = dRoll(6);
+
+      isCritHit = (roll >= critThreshold);
+      if (roll >= skillNeeded) hitCount = 1;
+    }
+
+    if (hitCount === 0) continue;
+
+    // Sustained Hits: crits add extra hits
+    if (!p.torrent && isCritHit) {
+      if      (p.sustainedHits2) hitCount += 2;
+      else if (p.sustainedHits1) hitCount += 1;
+    }
+
+    // Process each hit
+    for (let h = 0; h < hitCount; h++) {
+      // Lethal Hits: only the original crit hit (h===0) auto-wounds
+      const isLethalWound = (h === 0 && isCritHit && p.lethalHits && !p.torrent);
+
+      // ── TO WOUND ────────────────────────────────────
+      let wounded = false;
+      let isCritWound = false;
+
+      if (isLethalWound) {
+        wounded = true;
+        // lethal hits are NOT crit wounds (don't trigger devastating wounds)
+      } else {
+        let wThr;
+        if      (p.strength >= p.toughness * 2) wThr = 2;
+        else if (p.strength > p.toughness)      wThr = 3;
+        else if (p.strength === p.toughness)    wThr = 4;
+        else if (p.strength * 2 <= p.toughness) wThr = 6;
+        else                                    wThr = 5;
+
+        if (p.plusOneWound)   wThr = Math.max(2, wThr - 1);
+        if (p.minusOneWound)  wThr = Math.min(6, wThr + 1);
+        if (p.woundModMinus1) wThr = Math.min(6, wThr + 1);
+
+        const antiCritThr = (p.antiInfantry && p.targetInfantry) ? 4 : critThreshold;
+
+        let wRoll = dRoll(6);
+        if      (wRoll === 1 && p.rerollWound1)          wRoll = dRoll(6);
+        else if (wRoll < wThr && p.rerollWoundAll)       wRoll = dRoll(6);
+        else if (wRoll < wThr && p.twinLinked)           wRoll = dRoll(6);
+
+        isCritWound = (wRoll >= antiCritThr);
+        wounded = (wRoll >= wThr);
+      }
+
+      if (!wounded) continue;
+
+      // ── DEVASTATING WOUNDS ──────────────────────────
+      // Crit wounds skip saves, deal damage as mortal wounds
+      if (isCritWound && p.devastatingWounds) {
+        let dmg = rollDice(p.damageType, p.damageFixed);
+        if (p.melta) dmg += dRoll(6);
+        for (let pt = 0; pt < dmg; pt++) {
+          if (p.mwNegate > 0 && dRoll(6) >= p.mwNegate) continue;
+          if (p.fnp > 0      && dRoll(6) >= p.fnp)      continue;
+          totalDamage++;
+        }
+        continue;
+      }
+
+      // ── SAVING THROW ────────────────────────────────
+      let saveThr = p.armourSave + p.ap;
+      if (p.coverSave)                          saveThr = Math.max(2, saveThr - 1);
+      if (p.invulnSave > 0 && p.invulnSave < saveThr) saveThr = p.invulnSave;
+
+      if (saveThr <= 6 && dRoll(6) >= saveThr) continue; // saved
+
+      // ── DAMAGE + FNP ────────────────────────────────
+      let dmg = rollDice(p.damageType, p.damageFixed);
+      if (p.melta) dmg += dRoll(6);
+      for (let pt = 0; pt < dmg; pt++) {
+        if (p.fnp > 0 && dRoll(6) >= p.fnp) continue;
+        totalDamage++;
+      }
+    }
+  }
+
+  // Direct mortal wounds
+  const rawMW = p.mortalWoundsFlat
+    + (p.mortalWoundsType !== 'none' ? rollDice(p.mortalWoundsType, 0) : 0);
+  for (let pt = 0; pt < rawMW; pt++) {
+    if (p.mwNegate > 0 && dRoll(6) >= p.mwNegate) continue;
+    if (p.fnp > 0      && dRoll(6) >= p.fnp)      continue;
+    totalDamage++;
+  }
+
+  return { damage: totalDamage, attacks: totalAtk };
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SIMULATE — 10,000 runs → stats + histogram
+// ═══════════════════════════════════════════════════════════
+function simulate() {
+  const g = id => document.getElementById(id);
+
+  const p = {
+    numModels:        parseInt(g('numModels').value)||1,
+    attacksType:      g('attacksType').value,
+    attacksFixed:     parseFloat(g('attacksFixed').value)||1,
+    skill:            parseInt(g('skill').value),
+    strength:         parseInt(g('strength').value),
+    ap:               parseInt(g('ap').value),
+    damageType:       g('damageType').value,
+    damageFixed:      parseFloat(g('damageFixed').value) ?? 1,
+    toughness:        parseInt(g('toughness').value),
+    wpModel:          parseInt(g('wounds').value),
+    armourSave:       parseInt(g('armourSave').value),
+    invulnSave:       parseInt(g('invulnSave').value),
+    fnp:              parseInt(g('fnp').value),
+    defModels:        parseInt(g('defModels').value)||1,
+    mwNegate:         parseInt(g('mwNegate').value),
+    mortalWoundsFlat: parseFloat(g('mortalWoundsFlat').value)||0,
+    mortalWoundsType: g('mortalWoundsType').value,
+    rerollHit1:       g('rerollHit1').checked,
+    rerollHitAll:     g('rerollHitAll').checked,
+    plusOneHit:       g('plusOneHit').checked,
+    minusOneHit:      g('minusOneHit').checked,
+    critOn5:          g('critOn5').checked,
+    sustainedHits1:   g('sustainedHits1').checked,
+    sustainedHits2:   g('sustainedHits2').checked,
+    lethalHits:       g('lethalHits').checked,
+    torrent:          g('torrent').checked,
+    heavyWeapon:      g('heavyWeapon').checked,
+    rerollWound1:     g('rerollWound1').checked,
+    rerollWoundAll:   g('rerollWoundAll').checked,
+    twinLinked:       g('twinLinked').checked,
+    plusOneWound:     g('plusOneWound').checked,
+    minusOneWound:    g('minusOneWound').checked,
+    devastatingWounds:g('devastatingWounds').checked,
+    antiInfantry:     g('antiInfantry').checked,
+    targetInfantry:   g('targetInfantry').checked,
+    melta:            g('melta').checked,
+    blast:            g('blast').checked,
+    hazardous:        g('hazardous').checked,
+    coverSave:        g('coverSave').checked,
+    stealth:          g('stealth').checked,
+    smokeLaunchers:   g('smokeLaunchers').checked,
+    woundModMinus1:   g('woundModMinus1').checked,
+  };
+
+  const RUNS = 10000;
+  const results = new Array(RUNS);
+  let totalAtkSum = 0;
+
+  for (let i = 0; i < RUNS; i++) {
+    const r = runOneCombat(p);
+    results[i] = r.damage;
+    totalAtkSum += r.attacks;
+  }
+
+  results.sort((a, b) => a - b);
+
+  const minD  = results[0];
+  const maxD  = results[RUNS - 1];
+  const sumD  = results.reduce((s, v) => s + v, 0);
+  const avgD  = sumD / RUNS;
+  const medD  = results[Math.floor(RUNS / 2)];
+  const avgAtk = totalAtkSum / RUNS;
+
+  const variance = results.reduce((s, v) => s + (v - avgD) ** 2, 0) / RUNS;
+  const stddev   = Math.sqrt(variance);
+
+  const pAbove = (results.filter(v => v >= Math.round(avgD)).length / RUNS * 100).toFixed(0);
+  const pZero  = (results.filter(v => v === 0).length / RUNS * 100).toFixed(0);
+  const maxAtRisk = Math.min(p.defModels, Math.round(Math.min(avgAtk, medD / p.wpModel)));
+
+  g('s-min').textContent    = minD;
+  g('s-max').textContent    = maxD;
+  g('s-avg').textContent    = Math.round(avgD);
+  g('s-med').textContent    = medD;
+  g('s-stddev').textContent = stddev.toFixed(1);
+  g('s-p50').textContent    = pAbove + '%';
+  g('s-zero').textContent   = pZero + '%';
+  g('s-models').textContent = maxAtRisk;
+
+  document.getElementById('results').style.display = 'block';
+  renderHistogram(results, Math.round(avgD), medD);
+  document.getElementById('results').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  HISTOGRAM RENDERER
+// ═══════════════════════════════════════════════════════════
+function renderHistogram(results, avg, median) {
+  const RUNS  = results.length;
+  const minD  = results[0];
+  const maxD  = results[RUNS - 1];
+  const range = maxD - minD;
+
+  // Bucket size: 1 if range ≤ 60, otherwise group into ~60 bars
+  const bucketSize = range <= 60 ? 1 : Math.ceil(range / 60);
+  const numBuckets = Math.ceil((range + 1) / bucketSize);
+
+  const counts = new Array(numBuckets).fill(0);
+  for (const v of results) {
+    const idx = Math.min(Math.floor((v - minD) / bucketSize), numBuckets - 1);
+    counts[idx]++;
+  }
+
+  const maxCount = Math.max(...counts);
+  const hist = document.getElementById('histogram');
+  hist.innerHTML = '';
+
+  // How many x-labels to show (avoid crowding)
+  const labelEvery = Math.ceil(numBuckets / 20);
+
+  counts.forEach((count, i) => {
+    const bMin   = minD + i * bucketSize;
+    const bMax   = bMin + bucketSize - 1;
+    const hPct   = maxCount > 0 ? (count / maxCount) * 100 : 0;
+    const isMedian = median >= bMin && median <= bMax;
+    const pct    = (count / RUNS * 100).toFixed(1);
+    const label  = bucketSize === 1 ? String(bMin) : `${bMin}–${bMax}`;
+    const xLabel = (i % labelEvery === 0) ? String(bMin) : '';
+
+    const col = document.createElement('div');
+    col.className = 'hist-col';
+    col.innerHTML =
+      `<div class="hist-tip">${label} damage · ${pct}% · ${count} runs</div>` +
+      `<div class="hist-bar ${isMedian ? 'median' : 'normal'}" style="height:${Math.max(2, hPct)}%"></div>` +
+      `<div class="hist-xlabel">${xLabel}</div>`;
+    hist.appendChild(col);
+  });
+}
 </script>
 </body>
 </html>
