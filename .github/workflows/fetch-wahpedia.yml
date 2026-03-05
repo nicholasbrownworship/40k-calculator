@@ -1,0 +1,64 @@
+name: Fetch Wahapedia Data
+
+on:
+  schedule:
+    - cron: '0 4 * * *'   # Runs daily at 4:00 AM UTC
+  workflow_dispatch:        # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # Needed to commit the JSON files back to the repo
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Fetch Wahapedia CSVs and convert to JSON
+        run: |
+          mkdir -p data
+
+          # Helper function: download a pipe-delimited CSV and convert to JSON
+          csv_to_json() {
+            local url="$1"
+            local outfile="$2"
+            echo "Fetching $url..."
+            curl -sSL --retry 3 --retry-delay 5 "$url" | python3 - <<'PYEOF' "$outfile"
+          import sys, csv, json
+
+          outfile = sys.argv[1]
+          raw = sys.stdin.read().lstrip('\ufeff')  # strip BOM if present
+          lines = raw.strip().splitlines()
+          reader = csv.DictReader(lines, delimiter='|')
+          rows = [dict(row) for row in reader]
+          # Strip whitespace from all keys and values
+          rows = [{k.strip(): v.strip() for k, v in row.items()} for row in rows]
+          with open(outfile, 'w', encoding='utf-8') as f:
+              json.dump(rows, f, ensure_ascii=False, separators=(',', ':'))
+          print(f"  -> {len(rows)} rows written to {outfile}")
+          PYEOF
+          }
+
+          BASE="https://wahapedia.ru/wh40k10ed"
+
+          csv_to_json "$BASE/Datasheets.csv"          "data/datasheets.json"
+          csv_to_json "$BASE/Datasheets_models.csv"   "data/models.json"
+          csv_to_json "$BASE/Datasheets_weapons.csv"  "data/weapons.json"
+          csv_to_json "$BASE/Factions.csv"            "data/factions.json"
+
+          echo "All files written:"
+          ls -lh data/
+
+      - name: Commit updated data files
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          # Only commit if something actually changed
+          if git diff --cached --quiet; then
+            echo "No changes to data files — skipping commit."
+          else
+            git commit -m "chore: update Wahapedia data [$(date -u +%Y-%m-%d)]"
+            git push
+          fi
