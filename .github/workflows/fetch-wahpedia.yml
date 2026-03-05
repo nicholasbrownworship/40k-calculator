@@ -2,60 +2,256 @@ name: Fetch Wahapedia Data
 
 on:
   schedule:
-    - cron: '0 4 * * *'   # Runs daily at 4:00 AM UTC
-  workflow_dispatch:        # Allows manual trigger from GitHub Actions tab
+    - cron: "0 4 * * *"   # daily at 04:00 UTC
+  workflow_dispatch:
 
 jobs:
   fetch-data:
     runs-on: ubuntu-latest
     permissions:
-      contents: write       # Needed to commit the JSON files back to the repo
+      contents: write
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Fetch Wahapedia CSVs and convert to JSON
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch Wahapedia CSVs + build unit JSON
         run: |
-          mkdir -p data
+          set -euo pipefail
 
-          # Helper function: download a pipe-delimited CSV and convert to JSON
-          csv_to_json() {
-            local url="$1"
-            local outfile="$2"
-            echo "Fetching $url..."
-            curl -sSL --retry 3 --retry-delay 5 "$url" | python3 - <<'PYEOF' "$outfile"
-          import sys, csv, json
-
-          outfile = sys.argv[1]
-          raw = sys.stdin.read().lstrip('\ufeff')  # strip BOM if present
-          lines = raw.strip().splitlines()
-          reader = csv.DictReader(lines, delimiter='|')
-          rows = [dict(row) for row in reader]
-          # Strip whitespace from all keys and values
-          rows = [{k.strip(): v.strip() for k, v in row.items()} for row in rows]
-          with open(outfile, 'w', encoding='utf-8') as f:
-              json.dump(rows, f, ensure_ascii=False, separators=(',', ':'))
-          print(f"  -> {len(rows)} rows written to {outfile}")
-          PYEOF
-          }
+          mkdir -p tmp data/raw
 
           BASE="https://wahapedia.ru/wh40k10ed"
 
-          csv_to_json "$BASE/Datasheets.csv"          "data/datasheets.json"
-          csv_to_json "$BASE/Datasheets_models.csv"   "data/models.json"
-          csv_to_json "$BASE/Datasheets_weapons.csv"  "data/weapons.json"
-          csv_to_json "$BASE/Factions.csv"            "data/factions.json"
+          fetch_csv () {
+            local url="$1"
+            local out="$2"
 
-          echo "All files written:"
+            echo "== Fetching: $url"
+            curl -fSsL --retry 3 --retry-delay 5 \
+              -A "40k-damage-calc/1.0 (+github actions)" \
+              -D "tmp/headers.txt" \
+              "$url" -o "$out"
+
+            # Fail if we got HTML (common when blocked/served an error page)
+            if head -c 200 "$out" | grep -qiE '<!doctype|<html'; then
+              echo "ERROR: Downloaded HTML instead of CSV from $url"
+              echo "-- Response headers (first 40 lines):"
+              sed -n '1,40p' tmp/headers.txt || true
+              echo "-- Body preview:"
+              head -n 20 "$out" || true
+              exit 1
+            fi
+
+            # Another sanity check: must contain pipe delimiters
+            if ! head -n 5 "$out" | grep -q '|'; then
+              echo "ERROR: File does not look pipe-delimited: $out"
+              echo "-- Response headers (first 40 lines):"
+              sed -n '1,40p' tmp/headers.txt || true
+              echo "-- Body preview:"
+              head -n 20 "$out" || true
+              exit 1
+            fi
+
+            echo "-- OK: $(wc -c < "$out") bytes"
+          }
+
+          # Core tables for units + stats + weapons
+          fetch_csv "$BASE/Datasheets.csv"          "tmp/Datasheets.csv"
+          fetch_csv "$BASE/Datasheets_models.csv"   "tmp/Datasheets_models.csv"
+          fetch_csv "$BASE/Datasheets_wargear.csv"  "tmp/Datasheets_wargear.csv"
+          fetch_csv "$BASE/Factions.csv"            "tmp/Factions.csv"
+
+          node <<'NODE'
+          const fs = require("fs");
+
+          function stripBom(s){ return s.replace(/^\uFEFF/, ""); }
+
+          // Wahapedia export files are pipe-delimited "CSV tables" and often do NOT include header rows.
+          // We supply headers explicitly.
+          function parsePipe(raw, headers){
+            raw = stripBom(raw);
+            const lines = raw.split(/\r?\n/).filter(l => l.trim().length);
+            const out = [];
+            for (const line of lines){
+              const cols = line.split("|");
+              const row = {};
+              for (let i = 0; i < headers.length; i++){
+                row[headers[i]] = (cols[i] ?? "").trim();
+              }
+              out.push(row);
+            }
+            return out;
+          }
+
+          function writeJson(filePath, obj){
+            fs.writeFileSync(filePath, JSON.stringify(obj, null, 0), "utf8");
+            console.log(` -> ${filePath}: ${obj.length} rows`);
+          }
+
+          // Headers used by your app:
+          // - datasheets: must have id + name (+ faction_id is very helpful)
+          // - models: gives unit statlines (M/T/Sv/W/Ld/OC plus invul)
+          // - wargear: gives weapon profiles (range/type/A/BS_WS/S/AP/D + description)
+          // - factions: id->name map
+          //
+          // NOTE: If Wahapedia adjusts schema in the future, you may need to tweak these arrays.
+          const H = {
+            datasheets: [
+              "id","name","faction_id","source_id","legend","role","loadout","transport",
+              "virtual","leader_head","leader_footer","damaged_w","damaged_description","link"
+            ],
+            models: [
+              "datasheet_id","line","name","M","T","Sv","inv_sv","inv_sv_descr",
+              "W","Ld","OC","base_size","base_size_descr"
+            ],
+            wargear: [
+              "datasheet_id","line","line_in_wargear","dice","name","description",
+              "range","type","A","BS_WS","S","AP","D"
+            ],
+            factions: ["id","name","link"]
+          };
+
+          const datasheetsRaw = fs.readFileSync("tmp/Datasheets.csv","utf8");
+          const modelsRaw     = fs.readFileSync("tmp/Datasheets_models.csv","utf8");
+          const wargearRaw    = fs.readFileSync("tmp/Datasheets_wargear.csv","utf8");
+          const factionsRaw   = fs.readFileSync("tmp/Factions.csv","utf8");
+
+          const datasheets = parsePipe(datasheetsRaw, H.datasheets);
+          const models     = parsePipe(modelsRaw, H.models);
+          const wargear    = parsePipe(wargearRaw, H.wargear);
+          const factions   = parsePipe(factionsRaw, H.factions);
+
+          // Sanity check: do we have unit names?
+          const sample = datasheets.find(d => d.id && d.name);
+          if (!sample) {
+            console.error("ERROR: datasheets parsed but produced no {id,name}.");
+            console.error("This usually means schema mismatch OR blocked/HTML download.");
+            process.exit(1);
+          }
+          console.log("Sample datasheet:", sample);
+
+          fs.mkdirSync("data/raw", { recursive: true });
+
+          // Save raw tables (useful for debugging later)
+          writeJson("data/raw/datasheets.json", datasheets);
+          writeJson("data/raw/models.json", models);
+          writeJson("data/raw/wargear.json", wargear);
+          writeJson("data/raw/factions.json", factions);
+
+          // Build maps for joining
+          const factionNameById = new Map(factions.map(f => [String(f.id), String(f.name)]));
+
+          const modelsBySheet = new Map();
+          for (const m of models) {
+            const id = String(m.datasheet_id);
+            if (!modelsBySheet.has(id)) modelsBySheet.set(id, []);
+            modelsBySheet.get(id).push(m);
+          }
+
+          const wargearBySheet = new Map();
+          for (const w of wargear) {
+            const id = String(w.datasheet_id);
+            if (!wargearBySheet.has(id)) wargearBySheet.set(id, []);
+            wargearBySheet.get(id).push(w);
+          }
+
+          // Normalize for search
+          function norm(s){
+            return String(s ?? "")
+              .toLowerCase()
+              .normalize("NFKD")
+              .replace(/[^\p{L}\p{N}]+/gu, " ")
+              .trim();
+          }
+
+          // 1) units.json: structured unit data your calculator can use
+          const units = datasheets
+            .filter(d => d.id && d.name)
+            .map(d => {
+              const id = String(d.id);
+              const factionName = factionNameById.get(String(d.faction_id)) || "";
+
+              const unitModels = (modelsBySheet.get(id) || []).map(m => ({
+                name: m.name,
+                M: m.M, T: m.T, Sv: m.Sv,
+                inv: m.inv_sv, inv_text: m.inv_sv_descr,
+                W: m.W, Ld: m.Ld, OC: m.OC,
+                base: m.base_size, base_text: m.base_size_descr
+              }));
+
+              const unitWargear = (wargearBySheet.get(id) || []).map(w => ({
+                name: w.name,
+                description: w.description,
+                range: w.range,
+                type: w.type,
+                A: w.A,
+                BS_WS: w.BS_WS,
+                S: w.S,
+                AP: w.AP,
+                D: w.D
+              }));
+
+              return {
+                id,
+                name: d.name,
+                faction_id: d.faction_id,
+                faction: factionName,
+                role: d.role,
+                loadout: d.loadout,
+                transport: d.transport,
+                models: unitModels,
+                wargear: unitWargear
+              };
+            });
+
+          writeJson("data/units.json", units);
+
+          // 2) units.search.json: “search by anything” blob per unit (fast frontend filter)
+          const searchIndex = units.map(u => {
+            const blobParts = [
+              u.name, u.faction, u.role, u.loadout, u.transport,
+              ...(u.models || []).flatMap(m => [m.name, m.M, m.T, m.Sv, m.inv, m.W, m.Ld, m.OC]),
+              ...(u.wargear || []).flatMap(w => [w.name, w.range, w.type, w.A, w.BS_WS, w.S, w.AP, w.D, w.description]),
+            ];
+            return {
+              id: u.id,
+              name: u.name,
+              faction: u.faction,
+              faction_id: u.faction_id,
+              role: u.role,
+              q: norm(blobParts.filter(Boolean).join(" "))
+            };
+          });
+
+          writeJson("data/units.search.json", searchIndex);
+
+          // Tiny build summary file (nice for debugging on the site)
+          const summary = {
+            generatedAt: new Date().toISOString(),
+            unitCount: units.length,
+            sampleUnit: units[0]?.name ?? null
+          };
+          fs.writeFileSync("data/build-summary.json", JSON.stringify(summary, null, 2), "utf8");
+          console.log("Summary:", summary);
+          NODE
+
+          echo "Done. Output files:"
           ls -lh data/
+          echo "Units count:"
+          node -e "const u=require('./data/units.json'); console.log(u.length)"
 
       - name: Commit updated data files
         run: |
+          set -euo pipefail
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/
-          # Only commit if something actually changed
           if git diff --cached --quiet; then
             echo "No changes to data files — skipping commit."
           else
