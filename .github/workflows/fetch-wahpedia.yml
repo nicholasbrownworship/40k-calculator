@@ -138,11 +138,17 @@ jobs:
 
           fs.mkdirSync("data/raw", { recursive: true });
 
-          // Save raw tables (useful for debugging later)
-          writeJson("data/raw/datasheets.json", datasheets);
-          writeJson("data/raw/models.json", models);
-          writeJson("data/raw/wargear.json", wargear);
-          writeJson("data/raw/factions.json", factions);
+          // Keep raw copies (optional)
+writeJson("data/raw/datasheets.json", datasheets);
+writeJson("data/raw/models.json", models);
+writeJson("data/raw/wargear.json", wargear);
+writeJson("data/raw/factions.json", factions);
+
+// ✅ These are what index.html actually loads:
+writeJson("data/datasheets.json", datasheets);
+writeJson("data/models.json", models);
+writeJson("data/weapons.json", wargear);   // wargear == weapons for your frontend
+writeJson("data/factions.json", factions);
 
           // Build maps for joining
           const factionNameById = new Map(factions.map(f => [String(f.id), String(f.name)]));
