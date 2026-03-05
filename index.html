@@ -690,7 +690,10 @@ function applyWeapon() {
   const w = atkWeapons[i];
   if (!w) return;
 
-  // Wahapedia field names: A, S, AP, D, BS_WS, description (contains keywords)
+  // Log the raw weapon object so field names are visible in browser console
+  console.log('applyWeapon raw fields:', w);
+
+  // Wahapedia wargear fields: A, S, AP, D, BS_WS, description, range, type
   setDicePair('attacksType', 'attacksFixed', w.A || '1');
   setSkillSel(w.BS_WS);
   const s = parseInt(w.S); if (!isNaN(s)) document.getElementById('strength').value = s;
@@ -762,7 +765,17 @@ window.addEventListener('DOMContentLoaded', loadDB);
 // ═══════════════════════════════════════════════════
 //  COMBAT MATHS
 // ═══════════════════════════════════════════════════
-const DAVG = {fixed:null,d3:2,d6:3.5,'2d3':4,'2d6':7,'d3+1':3,'d3+3':5,'d6+1':4.5,'d6+2':5.5,'d6+3':6.5};
+const DAVG = {
+  'fixed':null, 'd3':2, 'd6':3.5, '2d3':4, '2d6':7,
+  'd3+1':3, 'd3+3':5, 'd6+1':4.5, 'd6+2':5.5, 'd6+3':6.5
+};
+// Safe average lookup — logs a warning if key is missing so bugs surface immediately
+function dAvg(type, fixedVal) {
+  if (type === 'fixed' || type === null || type === undefined) return fixedVal;
+  const v = DAVG[type];
+  if (v === undefined) { console.warn('dAvg: unknown type', type); return fixedVal; }
+  return v;
+}
 const fmt  = n  => (n===null||n===undefined||isNaN(n)) ? '–' : Math.round(n).toString();
 // fmt2 keeps one decimal for probabilities shown in the breakdown table only
 const fmt2 = n  => (n===null||n===undefined||isNaN(n)) ? '–' : (n%1===0?n.toFixed(0):n.toFixed(2));
@@ -847,7 +860,7 @@ function calculate() {
   const critFrac = m.critOn5 ? 2/6 : 1/6;
 
   // ── Step 1: Attacks ──────────────────────────────────────
-  let atkPer = DAVG[attacksType] ?? attacksFixed;
+  let atkPer = dAvg(attacksType, attacksFixed);
   let totalAtk = numModels * atkPer;
   if (m.blast) {
     if      (defModels>=11) totalAtk = Math.max(totalAtk, numModels*6);
@@ -892,7 +905,7 @@ function calculate() {
   // ── Step 5: Damage Roll, then FNP per point of damage ────
   // 10th Ed sequence: damage is rolled per unsaved wound,
   // then FNP is rolled for each point of damage suffered.
-  let dpw = DAVG[damageType] ?? damageFixed;
+  let dpw = dAvg(damageType, damageFixed);
   if (m.melta) dpw += 3.5;
 
   const pFnp = fnpVal ? cl((7-fnpVal)/6,0,1) : 0;
