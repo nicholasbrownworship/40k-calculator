@@ -742,14 +742,33 @@ function setChk(id, v) { document.getElementById(id).checked = !!v; }
 function setSkillSel(raw) {
   const n = parseInt(raw); if (!isNaN(n) && n>=2 && n<=6) selByVal('skill',n);
 }
-const DMAP = { 'D3':'d3','D6':'d6','2D3':'2d3','2D6':'2d6','D3+1':'d3+1','D6+1':'d6+1','D6+2':'d6+2' };
+// Complete mapping of every dice notation to its select option value
+const DMAP = {
+  'D3':'d3', 'D6':'d6', '2D3':'2d3', '2D6':'2d6',
+  'D3+1':'d3+1', 'D3+3':'d3+3',
+  'D6+1':'d6+1', 'D6+2':'d6+2', 'D6+3':'d6+3'
+};
+
 function setDicePair(typeId, fixedId, raw) {
-  const u   = String(raw).trim().toUpperCase();
-  const key = Object.keys(DMAP).find(k => u===k || u.startsWith(k+'+'));
-  if (key) { selByVal(typeId, DMAP[key]); return; }
-  if (/D\d/.test(u)) { selByVal(typeId,'d6'); return; }
-  selByVal(typeId,'fixed');
-  const n = parseInt(raw); if (!isNaN(n)) document.getElementById(fixedId).value = n;
+  const u = String(raw).trim().toUpperCase();
+
+  // Exact match first (e.g. "D6+3" -> 'd6+3')
+  if (DMAP[u] !== undefined) {
+    selByVal(typeId, DMAP[u]);
+    return;
+  }
+
+  // Wahapedia sometimes writes "D6+3 " or "d6+3" — already handled by toUpperCase/trim above.
+  // Also handle cases like "1" or "2" (fixed numbers)
+  const n = parseInt(raw);
+  if (!isNaN(n)) {
+    selByVal(typeId, 'fixed');
+    document.getElementById(fixedId).value = n;
+    return;
+  }
+
+  // Last resort: log and leave unchanged
+  console.warn('setDicePair: unrecognised value:', raw, '— leaving field unchanged');
 }
 
 // Close dropdowns on outside click
