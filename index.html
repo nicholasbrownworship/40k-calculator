@@ -25,79 +25,72 @@
     }
     .app { max-width: 1040px; margin: 0 auto; padding: 2rem 1rem 5rem; }
 
-    /* HEADER */
+    /* ── HEADER ── */
     .header { text-align: center; margin-bottom: 2rem; }
-    .header-rule { display: flex; align-items: center; gap: 1rem; margin-bottom: .8rem; }
+    .header-rule { display:flex; align-items:center; gap:1rem; margin-bottom:.8rem; }
     .header-rule::before { content:''; flex:1; height:1px; background:linear-gradient(to right,transparent,var(--brass)); }
-    .header-rule::after  { content:''; flex:1; height:1px; background:linear-gradient(to left,transparent,var(--brass)); }
-    .skull { font-size: 1.4rem; color: var(--brass); }
+    .header-rule::after  { content:''; flex:1; height:1px; background:linear-gradient(to left, transparent,var(--brass)); }
+    .skull { font-size:1.4rem; color:var(--brass); }
     .header h1 { font-family:'Cinzel',serif; font-size:clamp(1.4rem,4vw,2.2rem); font-weight:800; color:var(--accent); letter-spacing:.12em; text-shadow:0 0 40px rgba(196,154,42,.35); line-height:1.1; }
     .header-sub { color:var(--text-dim); font-size:.75rem; letter-spacing:.25em; text-transform:uppercase; margin-top:.5rem; }
 
-    /* SEARCH ZONE */
+    /* ── SEARCH ZONE ── */
     .search-zone { background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:1.1rem 1.25rem; margin-bottom:1rem; position:relative; }
     .search-zone::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:4px 4px 0 0; background:linear-gradient(to right,var(--brass-dim),var(--brass),var(--brass-dim)); }
-    .search-title { font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.2em; text-transform:uppercase; color:var(--brass); margin-bottom:.9rem; }
+    .search-title { font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.2em; text-transform:uppercase; color:var(--brass); margin-bottom:.9rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem; }
+    .data-badge { font-family:'Rajdhani',sans-serif; font-size:.68rem; letter-spacing:.06em; text-transform:none; color:var(--text-dim); background:var(--surface); border:1px solid var(--border); border-radius:2px; padding:.15rem .5rem; }
+    .data-badge.ok   { color:var(--green); border-color:rgba(46,204,113,.3); }
+    .data-badge.err  { color:var(--red-bright); border-color:rgba(224,64,48,.3); }
+    .data-badge.load { color:var(--brass); border-color:rgba(196,154,42,.3); }
     .search-cols { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
     @media(max-width:600px){ .search-cols{ grid-template-columns:1fr; } }
     .search-col-label { font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); font-weight:700; margin-bottom:.4rem; }
     .search-input-wrap { position:relative; }
-    .search-input {
-      width:100%; background:var(--surface); border:1px solid var(--border); border-radius:3px;
-      color:var(--text); font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:600;
-      padding:.42rem .6rem; outline:none; transition:border-color .15s;
-    }
+    .search-input { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:3px; color:var(--text); font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:600; padding:.42rem .6rem; outline:none; transition:border-color .15s; }
     .search-input:focus { border-color:var(--brass); }
     .search-input::placeholder { color:var(--text-dim); font-weight:400; }
-    .search-dropdown {
-      position:absolute; top:calc(100% + 3px); left:0; right:0; z-index:200;
-      background:var(--panel2); border:1px solid var(--border); border-radius:3px;
-      max-height:220px; overflow-y:auto; display:none; box-shadow:0 8px 24px rgba(0,0,0,.5);
-    }
-    .search-dropdown.open { display:block; }
+    .search-input:disabled { opacity:.4; cursor:not-allowed; }
+    .sdrop { position:absolute; top:calc(100% + 3px); left:0; right:0; z-index:200; background:var(--panel2); border:1px solid var(--border); border-radius:3px; max-height:220px; overflow-y:auto; display:none; box-shadow:0 8px 24px rgba(0,0,0,.55); }
+    .sdrop.open { display:block; }
     .sdrop-item { padding:.42rem .7rem; cursor:pointer; font-size:.88rem; font-weight:600; border-bottom:1px solid rgba(255,255,255,.04); transition:background .1s; }
     .sdrop-item:last-child { border-bottom:none; }
-    .sdrop-item:hover { background:var(--panel); }
+    .sdrop-item:hover, .sdrop-item.highlighted { background:var(--panel); }
     .sdrop-faction { font-size:.63rem; color:var(--brass-dim); display:block; margin-top:1px; }
-    .search-status { font-size:.73rem; color:var(--text-dim); margin-top:.4rem; min-height:1.1rem; }
-    .search-status.ok   { color:var(--green); }
-    .search-status.err  { color:var(--red-bright); }
-    .search-status.load { color:var(--brass); }
-    .weapon-select-wrap { margin-top:.6rem; display:none; }
-    .weapon-select-label { font-size:.65rem; letter-spacing:.12em; text-transform:uppercase; color:var(--brass-dim); font-weight:700; margin-bottom:.3rem; }
-    .weapon-select { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:3px; color:var(--text); font-family:'Rajdhani',sans-serif; font-size:.9rem; font-weight:600; padding:.38rem .5rem; outline:none; }
-    .weapon-select:focus { border-color:var(--brass); }
-    .weapon-select option { background:var(--surface); }
+    .sdrop-empty { padding:.5rem .7rem; font-size:.82rem; color:var(--text-dim); font-style:italic; }
+    .search-status { font-size:.72rem; color:var(--text-dim); margin-top:.35rem; min-height:1rem; }
+    .search-status.ok  { color:var(--green); }
+    .search-status.err { color:var(--red-bright); }
+    .weapon-wrap { margin-top:.6rem; display:none; }
+    .weapon-label { font-size:.65rem; letter-spacing:.12em; text-transform:uppercase; color:var(--brass-dim); font-weight:700; margin-bottom:.3rem; }
+    .weapon-sel { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:3px; color:var(--text); font-family:'Rajdhani',sans-serif; font-size:.9rem; font-weight:600; padding:.38rem .5rem; outline:none; }
+    .weapon-sel:focus { border-color:var(--brass); }
+    .weapon-sel option { background:var(--surface); }
 
-    /* COLUMNS */
+    /* ── COLUMNS ── */
     .columns { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
     @media(max-width:660px){ .columns{ grid-template-columns:1fr; } }
 
-    /* PANEL */
+    /* ── PANEL ── */
     .panel { background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:1.25rem; position:relative; }
     .panel::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:4px 4px 0 0; background:linear-gradient(to right,var(--brass-dim),var(--brass),var(--brass-dim)); }
     .panel-title { font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.2em; text-transform:uppercase; color:var(--brass); margin-bottom:1.1rem; padding-bottom:.6rem; border-bottom:1px solid var(--border); }
 
-    /* FIELDS */
+    /* ── FIELDS ── */
     .field { margin-bottom:.9rem; }
     .field:last-child { margin-bottom:0; }
     .field > label { display:block; font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); margin-bottom:.28rem; font-weight:600; }
     .field-row { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }
-    input[type="number"], select {
-      width:100%; background:var(--surface); border:1px solid var(--border); border-radius:3px;
-      color:var(--text); font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:700;
-      padding:.38rem .6rem; outline:none; transition:border-color .15s; -moz-appearance:textfield;
-    }
+    input[type="number"], select { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:3px; color:var(--text); font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:700; padding:.38rem .6rem; outline:none; transition:border-color .15s; -moz-appearance:textfield; }
     input[type="number"]::-webkit-inner-spin-button,
     input[type="number"]::-webkit-outer-spin-button { -webkit-appearance:none; }
     input[type="number"]:focus, select:focus { border-color:var(--brass); box-shadow:0 0 0 2px rgba(196,154,42,.12); }
     select option { background:var(--surface); }
 
-    /* SECTION DIVIDER */
+    /* ── SECTION DIVIDER ── */
     .sdivider { font-size:.65rem; letter-spacing:.18em; text-transform:uppercase; color:var(--brass-dim); font-weight:700; margin:1rem 0 .65rem; display:flex; align-items:center; gap:.5rem; }
     .sdivider::after { content:''; flex:1; height:1px; background:var(--border); }
 
-    /* CHECKBOXES */
+    /* ── CHECKBOXES ── */
     .check-grid { display:grid; grid-template-columns:1fr 1fr; gap:.3rem; }
     .check-label { display:flex; align-items:center; gap:.45rem; font-size:.78rem; letter-spacing:.04em; cursor:pointer; padding:.28rem .45rem; border:1px solid transparent; border-radius:3px; transition:all .12s; user-select:none; line-height:1.2; }
     .check-label:hover { background:var(--surface); border-color:var(--border); }
@@ -105,12 +98,12 @@
     .check-label input[type="checkbox"]:checked { background:var(--brass); border-color:var(--brass); }
     .check-label input[type="checkbox"]:checked::after { content:'✓'; position:absolute; top:-1px; left:1px; font-size:11px; color:#000; font-weight:900; }
 
-    /* BUTTON */
+    /* ── BUTTON ── */
     .calc-btn { display:block; width:100%; margin-top:1.25rem; padding:.85rem; background:linear-gradient(160deg,var(--red-dim),var(--red)); border:1px solid var(--red); border-radius:3px; color:#fff; font-family:'Cinzel',serif; font-size:.9rem; font-weight:600; letter-spacing:.2em; text-transform:uppercase; cursor:pointer; transition:all .18s; }
     .calc-btn:hover { background:linear-gradient(160deg,var(--red),var(--red-bright)); box-shadow:0 0 24px rgba(184,50,40,.45); transform:translateY(-1px); }
     .calc-btn:active { transform:translateY(0); }
 
-    /* RESULTS */
+    /* ── RESULTS ── */
     #results { margin-top:1.25rem; display:none; }
     .results-panel { background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:1.25rem; position:relative; }
     .results-panel::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:4px 4px 0 0; background:linear-gradient(to right,var(--red-dim),var(--red-bright),var(--red-dim)); }
@@ -138,13 +131,18 @@
     .bd-val.warn { color:var(--accent); }
     .bd-val.bad  { color:var(--red-bright); }
 
-    /* TOOLTIP */
+    /* ── TOOLTIP ── */
     .tip { display:inline-block; width:13px; height:13px; border-radius:50%; background:var(--panel2); border:1px solid var(--border); color:var(--text-dim); font-size:9px; text-align:center; line-height:13px; cursor:help; vertical-align:middle; margin-left:3px; position:relative; }
-    .tip:hover::after { content:attr(data-tip); position:absolute; bottom:120%; left:50%; transform:translateX(-50%); background:var(--panel2); border:1px solid var(--border); color:var(--text); padding:.4rem .6rem; border-radius:3px; font-size:.7rem; white-space:nowrap; pointer-events:none; z-index:10; letter-spacing:.04em; font-family:'Rajdhani',sans-serif; min-width:180px; max-width:260px; white-space:normal; }
+    .tip:hover::after { content:attr(data-tip); position:absolute; bottom:120%; left:50%; transform:translateX(-50%); background:var(--panel2); border:1px solid var(--border); color:var(--text); padding:.4rem .6rem; border-radius:3px; font-size:.7rem; pointer-events:none; z-index:10; letter-spacing:.04em; font-family:'Rajdhani',sans-serif; min-width:180px; max-width:260px; white-space:normal; }
 
     .footnote { text-align:center; color:var(--text-dim); font-size:.68rem; letter-spacing:.1em; margin-top:2.5rem; }
     .footnote a { color:var(--brass-dim); text-decoration:none; }
     .footnote a:hover { color:var(--brass); }
+
+    /* ── SETUP NOTICE ── */
+    .setup-notice { background:rgba(196,154,42,.07); border:1px solid var(--brass-dim); border-radius:3px; padding:.7rem 1rem; margin-top:.6rem; font-size:.78rem; color:var(--text-dim); line-height:1.6; display:none; }
+    .setup-notice strong { color:var(--accent); }
+    .setup-notice code { background:var(--surface); border:1px solid var(--border); border-radius:2px; padding:.1rem .35rem; font-size:.8em; color:var(--text); }
   </style>
 </head>
 <body>
@@ -159,47 +157,56 @@
 
   <!-- UNIT SEARCH -->
   <div class="search-zone">
-    <div class="search-title">⚙ Unit Search — Powered by Wahapedia</div>
-    <div class="search-cols">
+    <div class="search-title">
+      <span>⚙ Unit Search</span>
+      <span class="data-badge load" id="dataBadge">⏳ Loading data…</span>
+    </div>
 
-      <!-- Attacker search -->
+    <!-- Setup notice shown when data files are missing -->
+    <div class="setup-notice" id="setupNotice">
+      <strong>First-time setup:</strong> Unit search requires data files that are generated by the included GitHub Action.<br>
+      Go to your repo → <strong>Actions → Fetch Wahapedia Data → Run workflow</strong> to generate them now.<br>
+      After that, the workflow runs automatically every night. Stats can still be entered manually below.
+    </div>
+
+    <div class="search-cols">
+      <!-- Attacker -->
       <div>
         <div class="search-col-label">Attacker Unit</div>
         <div class="search-input-wrap">
           <input class="search-input" type="text" id="atkSearch"
-            placeholder="e.g. Space Marine Tactical Squad…"
+            placeholder="e.g. Intercessor Squad…"
             autocomplete="off"
-            oninput="onSearchInput('atk')"
-            onfocus="onSearchFocus('atk')" />
-          <div class="search-dropdown" id="atkDrop"></div>
+            oninput="onInput('atk')"
+            onkeydown="onKey(event,'atk')" />
+          <div class="sdrop" id="atkDrop"></div>
         </div>
         <div class="search-status" id="atkStatus"></div>
-        <div class="weapon-select-wrap" id="weaponWrap">
-          <div class="weapon-select-label">Select Weapon Profile</div>
-          <select class="weapon-select" id="weaponPicker" onchange="applyWeapon()"></select>
+        <div class="weapon-wrap" id="weaponWrap">
+          <div class="weapon-label">Weapon Profile</div>
+          <select class="weapon-sel" id="weaponPicker" onchange="applyWeapon()"></select>
         </div>
       </div>
-
-      <!-- Defender search -->
+      <!-- Defender -->
       <div>
         <div class="search-col-label">Defender Unit</div>
         <div class="search-input-wrap">
           <input class="search-input" type="text" id="defSearch"
             placeholder="e.g. Ork Boyz…"
             autocomplete="off"
-            oninput="onSearchInput('def')"
-            onfocus="onSearchFocus('def')" />
-          <div class="search-dropdown" id="defDrop"></div>
+            oninput="onInput('def')"
+            onkeydown="onKey(event,'def')" />
+          <div class="sdrop" id="defDrop"></div>
         </div>
         <div class="search-status" id="defStatus"></div>
       </div>
     </div>
-  </div>
+  </div><!-- /search-zone -->
 
   <!-- INPUT COLUMNS -->
   <div class="columns">
 
-    <!-- ATTACKER -->
+    <!-- ATTACKER PANEL -->
     <div class="panel">
       <div class="panel-title">⚔ Attacker Profile</div>
 
@@ -242,7 +249,7 @@
         <label class="check-label"><input type="checkbox" id="plusOneHit" /> +1 to Hit</label>
         <label class="check-label"><input type="checkbox" id="minusOneHit" /> −1 to Hit</label>
         <label class="check-label"><input type="checkbox" id="critOn5" /> Crits on 5+
-          <span class="tip" data-tip="Many armies (e.g. Orks Waaagh!, Necrons stratagem, Votann) trigger Critical Hits on 5+ instead of the usual 6+. Affects Lethal Hits, Sustained Hits, Devastating Wounds.">?</span>
+          <span class="tip" data-tip="Armies like Orks (Waaagh!), Necrons, and Leagues of Votann can score Critical Hits on 5+. Affects Lethal Hits, Sustained Hits, and Devastating Wounds.">?</span>
         </label>
         <label class="check-label"><input type="checkbox" id="sustainedHits1" /> Sustained Hits 1
           <span class="tip" data-tip="Each Critical Hit generates 1 extra hit">?</span>
@@ -254,10 +261,10 @@
           <span class="tip" data-tip="Critical Hits auto-wound — no wound roll needed">?</span>
         </label>
         <label class="check-label"><input type="checkbox" id="torrent" /> Torrent
-          <span class="tip" data-tip="Auto-hits — no to-hit roll required">?</span>
+          <span class="tip" data-tip="Auto-hits — skips the to-hit roll entirely">?</span>
         </label>
         <label class="check-label"><input type="checkbox" id="heavyWeapon" /> Heavy (stationary)
-          <span class="tip" data-tip="+1 to Hit if unit didn't move this turn">?</span>
+          <span class="tip" data-tip="+1 to Hit if the unit did not move this turn">?</span>
         </label>
         <label class="check-label"><input type="checkbox" id="twinLinked" /> Twin-linked
           <span class="tip" data-tip="Re-roll wound rolls of 1">?</span>
@@ -275,7 +282,7 @@
         <label class="check-label"><input type="checkbox" id="plusOneWound" /> +1 to Wound</label>
         <label class="check-label"><input type="checkbox" id="minusOneWound" /> −1 to Wound</label>
         <label class="check-label"><input type="checkbox" id="devastatingWounds" /> Devastating Wounds
-          <span class="tip" data-tip="Critical Wounds bypass saves and deal mortal wounds equal to the weapon's Damage characteristic">?</span>
+          <span class="tip" data-tip="Critical Wounds bypass saves and deal mortal wounds equal to the weapon's Damage">?</span>
         </label>
         <label class="check-label"><input type="checkbox" id="antiInfantry" /> Anti-Infantry 4+
           <span class="tip" data-tip="Critical Wounds on 4+ vs targets with the Infantry keyword">?</span>
@@ -287,24 +294,18 @@
         <div class="field-row">
           <div><label>AP</label>
             <select id="ap">
-              <option value="0">AP 0</option>
-              <option value="1">AP -1</option>
-              <option value="2">AP -2</option>
-              <option value="3">AP -3</option>
-              <option value="4">AP -4</option>
-              <option value="5">AP -5</option>
+              <option value="0">AP 0</option><option value="1">AP -1</option>
+              <option value="2">AP -2</option><option value="3">AP -3</option>
+              <option value="4">AP -4</option><option value="5">AP -5</option>
               <option value="6">AP -6</option>
             </select>
           </div>
           <div><label>Damage Type</label>
             <select id="damageType">
               <option value="fixed">Fixed</option>
-              <option value="d3">D3 (avg 2)</option>
-              <option value="d6">D6 (avg 3.5)</option>
-              <option value="2d3">2D3 (avg 4)</option>
-              <option value="2d6">2D6 (avg 7)</option>
-              <option value="d3+1">D3+1 (avg 3)</option>
-              <option value="d6+1">D6+1 (avg 4.5)</option>
+              <option value="d3">D3 (avg 2)</option><option value="d6">D6 (avg 3.5)</option>
+              <option value="2d3">2D3 (avg 4)</option><option value="2d6">2D6 (avg 7)</option>
+              <option value="d3+1">D3+1 (avg 3)</option><option value="d6+1">D6+1 (avg 4.5)</option>
               <option value="d6+2">D6+2 (avg 5.5)</option>
             </select>
           </div>
@@ -315,18 +316,18 @@
       </div>
       <div class="check-grid">
         <label class="check-label"><input type="checkbox" id="melta" /> Melta (half range)
-          <span class="tip" data-tip="Adds D6 bonus damage within half range (avg +3.5)">?</span>
+          <span class="tip" data-tip="Adds D6 bonus damage at half range (avg +3.5)">?</span>
         </label>
         <label class="check-label"><input type="checkbox" id="blast" /> Blast
-          <span class="tip" data-tip="Min 3 attacks vs 6+ model units; min 6 vs 11+ model units">?</span>
+          <span class="tip" data-tip="Minimum 3 attacks vs 6+ model units; minimum 6 vs 11+ model units">?</span>
         </label>
         <label class="check-label"><input type="checkbox" id="hazardous" /> Hazardous
-          <span class="tip" data-tip="Each unmodified hit roll of 1 deals 1 mortal wound to the attacking unit">?</span>
+          <span class="tip" data-tip="Unmodified hit rolls of 1 deal 1 mortal wound to the attacking unit">?</span>
         </label>
       </div>
     </div>
 
-    <!-- DEFENDER -->
+    <!-- DEFENDER PANEL -->
     <div class="panel">
       <div class="panel-title">🛡 Defender Profile</div>
 
@@ -348,21 +349,16 @@
         <div class="field-row">
           <div><label>Armour Save</label>
             <select id="armourSave">
-              <option value="2">2+</option>
-              <option value="3">3+</option>
-              <option value="4" selected>4+</option>
-              <option value="5">5+</option>
-              <option value="6">6+</option>
-              <option value="7">No Save</option>
+              <option value="2">2+</option><option value="3">3+</option>
+              <option value="4" selected>4+</option><option value="5">5+</option>
+              <option value="6">6+</option><option value="7">No Save</option>
             </select>
           </div>
           <div><label>Invulnerable Save</label>
             <select id="invulnSave">
               <option value="0" selected>None</option>
-              <option value="3">3++</option>
-              <option value="4">4++</option>
-              <option value="5">5++</option>
-              <option value="6">6++</option>
+              <option value="3">3++</option><option value="4">4++</option>
+              <option value="5">5++</option><option value="6">6++</option>
             </select>
           </div>
         </div>
@@ -380,10 +376,10 @@
       <div class="sdivider">Special Abilities</div>
       <div class="check-grid">
         <label class="check-label"><input type="checkbox" id="coverSave" /> In Cover (+1 save)
-          <span class="tip" data-tip="+1 to armour save characteristic (not invulnerable)">?</span>
+          <span class="tip" data-tip="+1 to the armour save characteristic (not invulnerable)">?</span>
         </label>
         <label class="check-label"><input type="checkbox" id="stealth" /> Stealth (−1 hit)
-          <span class="tip" data-tip="−1 to all incoming hit rolls">?</span>
+          <span class="tip" data-tip="−1 to all incoming hit rolls against this unit">?</span>
         </label>
         <label class="check-label"><input type="checkbox" id="smokeLaunchers" /> Smoke (−1 hit)</label>
         <label class="check-label"><input type="checkbox" id="targetInfantry" /> Infantry keyword
@@ -391,7 +387,7 @@
         </label>
         <label class="check-label"><input type="checkbox" id="targetMonster" /> Monster / Vehicle</label>
         <label class="check-label"><input type="checkbox" id="woundModMinus1" /> −1 to Wound (ability)
-          <span class="tip" data-tip="Defensive ability that worsens incoming wound rolls by 1">?</span>
+          <span class="tip" data-tip="A defensive ability that worsens incoming wound rolls by 1">?</span>
         </label>
       </div>
 
@@ -431,26 +427,32 @@
   </div>
 
   <p class="footnote">
-    Data sourced from <a href="https://wahapedia.ru" target="_blank">Wahapedia</a> · Not affiliated with Games Workshop ·
-    Warhammer 40,000 10th Edition · All results are <em>statistical averages</em> ·
+    Data sourced from <a href="https://wahapedia.ru" target="_blank">Wahapedia</a> ·
+    Not affiliated with Games Workshop · 10th Edition ·
+    All results are <em>statistical averages</em> ·
     <a href="https://github.com/" target="_blank">View on GitHub</a>
   </p>
-</div>
+</div><!-- /app -->
 
 <script>
-// ═══════════════════════════════════════════════════════════
-//  WAHAPEDIA DATA LAYER
-//  Fetches CSV files via a public CORS proxy.
-//  Falls back silently if offline — manual input still works.
-// ═══════════════════════════════════════════════════════════
-const PROXY = 'https://corsproxy.io/?url=';
-const BASE  = 'https://wahapedia.ru/wh40k10ed/';
+// ═══════════════════════════════════════════════════
+//  DATA LAYER
+//  Reads from local data/ folder (populated by the
+//  GitHub Action — no CORS, no proxy, no rate limits)
+// ═══════════════════════════════════════════════════
+const DATA_FILES = {
+  datasheets: 'data/datasheets.json',
+  models:     'data/models.json',
+  weapons:    'data/weapons.json',
+  factions:   'data/factions.json',
+};
 
 let DB = { datasheets:[], models:[], weapons:[], factions:[] };
 let dbState = 'idle'; // idle | loading | loaded | failed
 
 function parseCSV(raw) {
   const lines = raw.trim().split('\n');
+  if (lines.length < 2) return [];
   const headers = lines[0].replace(/^\uFEFF/,'').split('|').map(h=>h.trim());
   return lines.slice(1).map(line => {
     const vals = line.split('|');
@@ -460,78 +462,105 @@ function parseCSV(raw) {
   }).filter(r => Object.values(r).some(v=>v));
 }
 
-async function fetchCSV(url) {
-  const r = await fetch(PROXY + encodeURIComponent(url), {cache:'force-cache'});
-  if (!r.ok) throw new Error('HTTP ' + r.status);
-  return parseCSV(await r.text());
-}
-
 async function loadDB() {
   if (dbState === 'loaded' || dbState === 'loading') return;
   dbState = 'loading';
-  setStatus('atkStatus','⏳ Loading Wahapedia data…','load');
+  setBadge('⏳ Loading…', 'load');
+
   try {
-    const [ds, models, weapons, factions] = await Promise.all([
-      fetchCSV(BASE+'Datasheets.csv'),
-      fetchCSV(BASE+'Datasheets_models.csv'),
-      fetchCSV(BASE+'Datasheets_weapons.csv'),
-      fetchCSV(BASE+'Factions.csv'),
-    ]);
+    const [ds, models, weapons, factions] = await Promise.all(
+      Object.values(DATA_FILES).map(url =>
+        fetch(url, { cache: 'force-cache' }).then(r => {
+          if (!r.ok) throw new Error(r.status);
+          return r.json();
+        })
+      )
+    );
     DB = { datasheets:ds, models, weapons, factions };
     dbState = 'loaded';
-    setStatus('atkStatus','✓ Wahapedia data loaded — search any unit above','ok');
-    setTimeout(()=>setStatus('atkStatus','',''),4000);
+    const count = ds.length;
+    setBadge(`✓ ${count} units loaded`, 'ok');
   } catch(e) {
     dbState = 'failed';
-    setStatus('atkStatus','⚠ Could not load live data (CORS / network). Enter stats manually.','err');
+    setBadge('⚠ Data files not found', 'err');
+    document.getElementById('setupNotice').style.display = 'block';
   }
 }
 
-// ─── Search helpers ───────────────────────────────────────
+// ── Helpers ──────────────────────────────────────
+function setBadge(txt, cls) {
+  const el = document.getElementById('dataBadge');
+  el.textContent = txt;
+  el.className = 'data-badge ' + (cls||'');
+}
+
 function getFaction(id) {
-  const f = DB.factions.find(r => r.id === id);
-  return f ? f.name : (id||'');
+  const f = DB.factions.find(r=>r.id===id);
+  return f ? f.name : (id||'Unknown');
 }
 
 function searchUnits(q) {
   const lo = q.toLowerCase();
-  return DB.datasheets.filter(r => r.name && r.name.toLowerCase().includes(lo)).slice(0,25);
+  return DB.datasheets.filter(r=>r.name&&r.name.toLowerCase().includes(lo)).slice(0,30);
 }
 
 function getModels(dsId)  { return DB.models.filter(r=>r.datasheet_id===dsId); }
 function getWeapons(dsId) { return DB.weapons.filter(r=>r.datasheet_id===dsId); }
 
-// ─── State ───────────────────────────────────────────────
-let atkWeapons = [];
+// ── State ─────────────────────────────────────────
+let atkWeapons   = [];
+let highlighted  = { atk:-1, def:-1 };
 
-// ─── UI helpers ──────────────────────────────────────────
-function setStatus(id,msg,cls) {
+// ── Search UI ─────────────────────────────────────
+function setStat(id,msg,cls) {
   const el = document.getElementById(id);
   el.textContent = msg;
-  el.className = 'search-status' + (cls ? ' '+cls : '');
+  el.className = 'search-status' + (cls?' '+cls:'');
 }
 
-function onSearchFocus(side) {
-  if (dbState === 'idle') loadDB();
+function onInput(side) {
+  if (dbState !== 'loaded') { loadDB(); return; }
   const q = document.getElementById(side+'Search').value.trim();
-  if (q.length >= 2 && dbState === 'loaded') renderDrop(side, searchUnits(q));
-}
-
-function onSearchInput(side) {
-  if (dbState === 'idle') { loadDB(); return; }
-  if (dbState !== 'loaded') return;
-  const q = document.getElementById(side+'Search').value.trim();
+  highlighted[side] = -1;
   if (q.length < 2) { closeDrop(side); return; }
   renderDrop(side, searchUnits(q));
 }
 
+function onKey(e, side) {
+  const drop = document.getElementById(side+'Drop');
+  const items = drop.querySelectorAll('.sdrop-item');
+  if (!items.length) return;
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    highlighted[side] = Math.min(highlighted[side]+1, items.length-1);
+    refreshHighlight(side);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    highlighted[side] = Math.max(highlighted[side]-1, 0);
+    refreshHighlight(side);
+  } else if (e.key === 'Enter') {
+    if (highlighted[side] >= 0) items[highlighted[side]].dispatchEvent(new MouseEvent('mousedown'));
+    else calculate();
+  } else if (e.key === 'Escape') {
+    closeDrop(side);
+  }
+}
+
+function refreshHighlight(side) {
+  const items = document.getElementById(side+'Drop').querySelectorAll('.sdrop-item');
+  items.forEach((el,i)=>el.classList.toggle('highlighted', i===highlighted[side]));
+}
+
 function renderDrop(side, units) {
   const drop = document.getElementById(side+'Drop');
-  if (!units.length) { closeDrop(side); return; }
+  if (!units.length) {
+    drop.innerHTML = '<div class="sdrop-empty">No units found</div>';
+    drop.classList.add('open');
+    return;
+  }
   drop.innerHTML = units.map(u =>
     `<div class="sdrop-item" onmousedown="selectUnit('${side}','${u.id}','${u.name.replace(/'/g,'&#39;')}')">
-      ${u.name}
-      <span class="sdrop-faction">${getFaction(u.faction_id)}</span>
+      ${u.name}<span class="sdrop-faction">${getFaction(u.faction_id)}</span>
     </div>`
   ).join('');
   drop.classList.add('open');
@@ -544,26 +573,28 @@ function closeDrop(side) {
 function selectUnit(side, dsId, name) {
   closeDrop(side);
   document.getElementById(side+'Search').value = name;
+  highlighted[side] = -1;
   if (side === 'atk') applyAttacker(dsId, name);
   else                applyDefender(dsId, name);
 }
 
-// ─── Apply attacker unit ──────────────────────────────────
+// ── Apply attacker ─────────────────────────────────
 function applyAttacker(dsId, name) {
   atkWeapons = getWeapons(dsId);
   if (!atkWeapons.length) {
-    setStatus('atkStatus','✓ '+name+' loaded — no weapon data, set stats manually','ok');
+    setStat('atkStatus','✓ '+name+' loaded — no weapon data, fill in manually','ok');
     document.getElementById('weaponWrap').style.display = 'none';
     return;
   }
   const picker = document.getElementById('weaponPicker');
-  picker.innerHTML = atkWeapons.map((w,i)=>{
-    const label = `${w.name} [A:${w.A||'?'} S:${w.S||'?'} AP:${w.AP||'0'} D:${w.D||'?'}]`;
-    return `<option value="${i}">${label}</option>`;
+  picker.innerHTML = atkWeapons.map((w,i) => {
+    const ap  = w.AP  || '0';
+    const tag = `A:${w.A||'?'} S:${w.S||'?'} AP:${ap} D:${w.D||'?'}`;
+    return `<option value="${i}">${w.name}  [${tag}]</option>`;
   }).join('');
   document.getElementById('weaponWrap').style.display = 'block';
   applyWeapon();
-  setStatus('atkStatus','✓ '+name+' — pick a weapon above','ok');
+  setStat('atkStatus','✓ '+name+' — pick a weapon above','ok');
 }
 
 function applyWeapon() {
@@ -578,196 +609,198 @@ function applyWeapon() {
   setDicePair('damageType','damageFixed', w.D||'1');
 
   const kw = ((w.abilities||'')+' '+(w.keywords||'')).toUpperCase();
-  setChk('torrent',           kw.includes('TORRENT'));
-  setChk('lethalHits',        kw.includes('LETHAL HITS'));
-  setChk('sustainedHits1',    kw.includes('SUSTAINED HITS 1'));
-  setChk('sustainedHits2',    kw.includes('SUSTAINED HITS 2'));
-  setChk('devastatingWounds', kw.includes('DEVASTATING WOUNDS'));
-  setChk('blast',             kw.includes('BLAST'));
-  setChk('hazardous',         kw.includes('HAZARDOUS'));
-  setChk('melta',             kw.includes('MELTA'));
-  setChk('twinLinked',        kw.includes('TWIN-LINKED'));
+  setChk('torrent',            kw.includes('TORRENT'));
+  setChk('lethalHits',         kw.includes('LETHAL HITS'));
+  setChk('sustainedHits1',     kw.includes('SUSTAINED HITS 1') && !kw.includes('SUSTAINED HITS 2'));
+  setChk('sustainedHits2',     kw.includes('SUSTAINED HITS 2'));
+  setChk('devastatingWounds',  kw.includes('DEVASTATING WOUNDS'));
+  setChk('blast',              kw.includes('BLAST'));
+  setChk('hazardous',          kw.includes('HAZARDOUS'));
+  setChk('melta',              kw.includes('MELTA'));
+  setChk('twinLinked',         kw.includes('TWIN-LINKED'));
 }
 
-// ─── Apply defender unit ──────────────────────────────────
+// ── Apply defender ─────────────────────────────────
 function applyDefender(dsId, name) {
   const rows = getModels(dsId);
-  if (!rows.length) { setStatus('defStatus','✓ '+name+' — no model data found','ok'); return; }
-  const m = rows[0];
-  const t = parseInt(m.T),  w = parseInt(m.W),  sv = parseInt(m.Sv);
-  if (!isNaN(t)) document.getElementById('toughness').value = t;
-  if (!isNaN(w)) document.getElementById('wounds').value = w;
+  if (!rows.length) { setStat('defStatus','✓ '+name+' — no model data found','ok'); return; }
+  const m   = rows[0];
+  const t   = parseInt(m.T), w = parseInt(m.W), sv = parseInt(m.Sv);
+  if (!isNaN(t))  document.getElementById('toughness').value = t;
+  if (!isNaN(w))  document.getElementById('wounds').value = w;
   if (!isNaN(sv)) selByVal('armourSave', sv);
   const inv = parseInt(m.inv_sv);
   selByVal('invulnSave', (!isNaN(inv) && inv > 0) ? inv : 0);
-  const svDisp = isNaN(sv) ? '?' : sv+'+';
-  setStatus('defStatus',`✓ ${name} (T${isNaN(t)?'?':t} W${isNaN(w)?'?':w} Sv${svDisp})`,'ok');
+  const svD = isNaN(sv) ? '?' : sv+'+';
+  setStat('defStatus',`✓ ${name} (T${isNaN(t)?'?':t} W${isNaN(w)?'?':w} Sv${svD})`,'ok');
 }
 
-// ─── Select / field helpers ───────────────────────────────
+// ── Field helpers ──────────────────────────────────
 function selByVal(id, val) {
   const el = document.getElementById(id);
-  const o = [...el.options].find(o=>parseInt(o.value)===parseInt(val));
+  const o  = [...el.options].find(o=>parseInt(o.value)===parseInt(val));
   if (o) el.value = o.value;
 }
-function setChk(id, val) { document.getElementById(id).checked = !!val; }
+function setChk(id, v) { document.getElementById(id).checked = !!v; }
 function setSkillSel(raw) {
   const n = parseInt(raw); if (!isNaN(n) && n>=2 && n<=6) selByVal('skill',n);
 }
-const DMAP = {'D3':'d3','D6':'d6','2D3':'2d3','2D6':'2d6','D3+1':'d3+1','D6+1':'d6+1','D6+2':'d6+2'};
+const DMAP = { 'D3':'d3','D6':'d6','2D3':'2d3','2D6':'2d6','D3+1':'d3+1','D6+1':'d6+1','D6+2':'d6+2' };
 function setDicePair(typeId, fixedId, raw) {
-  const u = String(raw).trim().toUpperCase();
-  const key = Object.keys(DMAP).find(k=>u===k||u.startsWith(k+'+'));
-  if (key) { selByVal(typeId, DMAP[key]); }
-  else if (/D\d/.test(u)) { selByVal(typeId,'d6'); } // fallback
-  else { selByVal(typeId,'fixed'); const n=parseInt(raw); if(!isNaN(n)) document.getElementById(fixedId).value=n; }
+  const u   = String(raw).trim().toUpperCase();
+  const key = Object.keys(DMAP).find(k => u===k || u.startsWith(k+'+'));
+  if (key) { selByVal(typeId, DMAP[key]); return; }
+  if (/D\d/.test(u)) { selByVal(typeId,'d6'); return; }
+  selByVal(typeId,'fixed');
+  const n = parseInt(raw); if (!isNaN(n)) document.getElementById(fixedId).value = n;
 }
 
 // Close dropdowns on outside click
 document.addEventListener('click', e => {
   ['atk','def'].forEach(side => {
-    const inp = document.getElementById(side+'Search');
-    if (inp && !inp.closest('.search-input-wrap').contains(e.target)) closeDrop(side);
+    const wrap = document.getElementById(side+'Search').closest('.search-input-wrap');
+    if (!wrap.contains(e.target)) closeDrop(side);
   });
 });
 
 window.addEventListener('DOMContentLoaded', loadDB);
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 //  COMBAT MATHS
-// ═══════════════════════════════════════════════════════════
-const DICE_AVG = {fixed:null,d3:2,d6:3.5,'2d3':4,'2d6':7,'d3+1':3,'d3+3':5,'d6+1':4.5,'d6+2':5.5,'d6+3':6.5};
-const fmt  = n  => (n===null||n===undefined||isNaN(n)) ? '–' : (n%1===0 ? n.toFixed(0) : n.toFixed(2));
+// ═══════════════════════════════════════════════════
+const DAVG = {fixed:null,d3:2,d6:3.5,'2d3':4,'2d6':7,'d3+1':3,'d3+3':5,'d6+1':4.5,'d6+2':5.5,'d6+3':6.5};
+const fmt  = n  => (n===null||n===undefined||isNaN(n)) ? '–' : (n%1===0?n.toFixed(0):n.toFixed(2));
 const pct  = p  => (p*100).toFixed(1)+'%';
-const clmp = (v,lo,hi) => Math.min(hi,Math.max(lo,v));
+const cl   = (v,lo,hi) => Math.min(hi,Math.max(lo,v));
 
 function hitChance(skill, m) {
   if (m.torrent) return 1;
-  let d = 0;
+  let d=0;
   if (m.plusOneHit)     d--;
   if (m.minusOneHit)    d++;
   if (m.stealth)        d++;
   if (m.smokeLaunchers) d++;
   if (m.heavyWeapon)    d--;
-  const eff  = clmp(skill+d, 2, 6);
+  const eff  = cl(skill+d,2,6);
   const base = (7-eff)/6;
-  if (m.rerollHitAll)  return clmp(base+(1-base)*base, 0, 1);
-  if (m.rerollHit1)    return clmp(base+(1/6)*base, 0, 1);
-  return clmp(base, 0, 1);
+  if (m.rerollHitAll) return cl(base+(1-base)*base,0,1);
+  if (m.rerollHit1)   return cl(base+(1/6)*base,0,1);
+  return cl(base,0,1);
 }
 
-function woundChance(str, tough, m) {
+function woundChance(str,tough,m) {
   let thr;
-  if (str>=tough*2) thr=2;
-  else if (str>tough) thr=3;
-  else if (str===tough) thr=4;
-  else if (str*2<=tough) thr=6;
-  else thr=5;
-  let eff = thr;
-  if (m.plusOneWound)    eff=Math.max(2,eff-1);
-  if (m.minusOneWound)   eff=Math.min(6,eff+1);
-  if (m.woundModMinus1)  eff=Math.min(6,eff+1);
-  const base = (7-eff)/6;
-  if (m.rerollWoundAll||m.twinLinked) return clmp(m.rerollWoundAll ? base+(1-base)*base : base+(1/6)*base, 0, 1);
-  if (m.rerollWound1) return clmp(base+(1/6)*base, 0, 1);
-  return clmp(base, 0, 1);
+  if      (str>=tough*2)  thr=2;
+  else if (str>tough)     thr=3;
+  else if (str===tough)   thr=4;
+  else if (str*2<=tough)  thr=6;
+  else                    thr=5;
+  let eff=thr;
+  if (m.plusOneWound)   eff=Math.max(2,eff-1);
+  if (m.minusOneWound)  eff=Math.min(6,eff+1);
+  if (m.woundModMinus1) eff=Math.min(6,eff+1);
+  const base=(7-eff)/6;
+  if (m.rerollWoundAll||m.twinLinked) return cl(m.rerollWoundAll?base+(1-base)*base:base+(1/6)*base,0,1);
+  if (m.rerollWound1) return cl(base+(1/6)*base,0,1);
+  return cl(base,0,1);
 }
 
-function saveChance(armour, ap, invuln, cover) {
-  let eff = armour + ap;
-  if (cover) eff = Math.max(2, eff-1);
-  if (invuln > 0 && invuln < eff) eff = invuln;
-  return eff > 6 ? 0 : clmp((7-eff)/6, 0, 1);
+function saveChance(armour,ap,invuln,cover) {
+  let eff=armour+ap;
+  if (cover) eff=Math.max(2,eff-1);
+  if (invuln>0&&invuln<eff) eff=invuln;
+  return eff>6 ? 0 : cl((7-eff)/6,0,1);
 }
 
 function calculate() {
   const g = id => document.getElementById(id);
-  const numModels      = parseInt(g('numModels').value)||1;
-  const attacksType    = g('attacksType').value;
-  const attacksFixed   = parseFloat(g('attacksFixed').value)||1;
-  const skill          = parseInt(g('skill').value);
-  const strength       = parseInt(g('strength').value);
-  const ap             = parseInt(g('ap').value);
-  const damageType     = g('damageType').value;
-  const damageFixed    = parseFloat(g('damageFixed').value)||1;
-  const toughness      = parseInt(g('toughness').value);
-  const wpModel        = parseInt(g('wounds').value);
-  const armourSave     = parseInt(g('armourSave').value);
-  const invulnSave     = parseInt(g('invulnSave').value);
-  const fnpVal         = parseInt(g('fnp').value);
-  const defModels      = parseInt(g('defModels').value)||1;
-  const mwNegateVal    = parseInt(g('mwNegate').value);
+  const numModels    = parseInt(g('numModels').value)||1;
+  const attacksType  = g('attacksType').value;
+  const attacksFixed = parseFloat(g('attacksFixed').value)||1;
+  const skill        = parseInt(g('skill').value);
+  const strength     = parseInt(g('strength').value);
+  const ap           = parseInt(g('ap').value);
+  const damageType   = g('damageType').value;
+  const damageFixed  = parseFloat(g('damageFixed').value)||1;
+  const toughness    = parseInt(g('toughness').value);
+  const wpModel      = parseInt(g('wounds').value);
+  const armourSave   = parseInt(g('armourSave').value);
+  const invulnSave   = parseInt(g('invulnSave').value);
+  const fnpVal       = parseInt(g('fnp').value);
+  const defModels    = parseInt(g('defModels').value)||1;
+  const mwNegateVal  = parseInt(g('mwNegate').value);
 
   const m = {
-    rerollHit1:g('rerollHit1').checked, rerollHitAll:g('rerollHitAll').checked,
-    plusOneHit:g('plusOneHit').checked,  minusOneHit:g('minusOneHit').checked,
+    rerollHit1:g('rerollHit1').checked,        rerollHitAll:g('rerollHitAll').checked,
+    plusOneHit:g('plusOneHit').checked,         minusOneHit:g('minusOneHit').checked,
     critOn5:g('critOn5').checked,
     sustainedHits1:g('sustainedHits1').checked, sustainedHits2:g('sustainedHits2').checked,
-    lethalHits:g('lethalHits').checked, torrent:g('torrent').checked,
-    twinLinked:g('twinLinked').checked,  heavyWeapon:g('heavyWeapon').checked,
-    rerollWound1:g('rerollWound1').checked, rerollWoundAll:g('rerollWoundAll').checked,
-    plusOneWound:g('plusOneWound').checked,  minusOneWound:g('minusOneWound').checked,
+    lethalHits:g('lethalHits').checked,         torrent:g('torrent').checked,
+    twinLinked:g('twinLinked').checked,         heavyWeapon:g('heavyWeapon').checked,
+    rerollWound1:g('rerollWound1').checked,     rerollWoundAll:g('rerollWoundAll').checked,
+    plusOneWound:g('plusOneWound').checked,     minusOneWound:g('minusOneWound').checked,
     devastatingWounds:g('devastatingWounds').checked, antiInfantry:g('antiInfantry').checked,
-    melta:g('melta').checked, blast:g('blast').checked, hazardous:g('hazardous').checked,
-    coverSave:g('coverSave').checked, stealth:g('stealth').checked,
-    smokeLaunchers:g('smokeLaunchers').checked, targetInfantry:g('targetInfantry').checked,
+    melta:g('melta').checked,                   blast:g('blast').checked,
+    hazardous:g('hazardous').checked,
+    coverSave:g('coverSave').checked,           stealth:g('stealth').checked,
+    smokeLaunchers:g('smokeLaunchers').checked,  targetInfantry:g('targetInfantry').checked,
     woundModMinus1:g('woundModMinus1').checked,
   };
 
-  // Crit threshold
+  // Crit fraction: 5+ = 2/6, 6+ = 1/6
   const critFrac = m.critOn5 ? 2/6 : 1/6;
 
-  // Attacks
-  let atkPerModel = DICE_AVG[attacksType] ?? attacksFixed;
-  let totalAtk = numModels * atkPerModel;
+  // ── Attacks ──
+  let atkPer = DAVG[attacksType] ?? attacksFixed;
+  let totalAtk = numModels * atkPer;
   if (m.blast) {
-    if (defModels >= 11) totalAtk = Math.max(totalAtk, numModels * 6);
-    else if (defModels >= 6) totalAtk = Math.max(totalAtk, numModels * 3);
+    if      (defModels>=11) totalAtk = Math.max(totalAtk, numModels*6);
+    else if (defModels>=6)  totalAtk = Math.max(totalAtk, numModels*3);
   }
 
-  // To Hit
+  // ── To Hit ──
   const pH = hitChance(skill, m);
   let avgHits = totalAtk * pH;
   if (!m.torrent) {
-    const bonus = m.sustainedHits2 ? 2 : m.sustainedHits1 ? 1 : 0;
+    const bonus = m.sustainedHits2?2 : m.sustainedHits1?1 : 0;
     if (bonus) avgHits += totalAtk * critFrac * bonus;
   }
 
-  // Lethal Hits
-  const lethalAW        = m.lethalHits ? totalAtk * critFrac : 0;
-  const normalHitsWound = avgHits - lethalAW;
+  // ── Lethal Hits ──
+  const lethalAW    = m.lethalHits ? totalAtk * critFrac : 0;
+  const hitsToWound = avgHits - lethalAW;
 
-  // To Wound
+  // ── To Wound ──
   const pW = woundChance(strength, toughness, m);
-  let avgWounds = normalHitsWound * pW + lethalAW;
+  let avgWounds = hitsToWound * pW + lethalAW;
 
-  // Anti-Infantry bonus
+  // Anti-Infantry
   if (m.antiInfantry && m.targetInfantry) {
-    avgWounds += normalHitsWound * (3/6) * 0.25; // rough estimate
+    avgWounds += hitsToWound * (3/6) * 0.25;
   }
 
-  // Devastating Wounds
-  let devastMW = 0, regularW = avgWounds;
+  // ── Devastating Wounds ──
+  let devastMW=0, regularW=avgWounds;
   if (m.devastatingWounds) {
-    devastMW = normalHitsWound * pW * critFrac;
+    devastMW = hitsToWound * pW * critFrac;
     regularW = avgWounds - devastMW;
   }
 
-  // Saves & FNP
+  // ── Saves ──
   const pSave = saveChance(armourSave, ap, invulnSave, m.coverSave);
-  const pFnp  = fnpVal ? clmp((7-fnpVal)/6, 0, 1) : 0;
-  const afterFnpReg = regularW * (1-pSave) * (1-pFnp);
+  const pFnp  = fnpVal ? cl((7-fnpVal)/6,0,1) : 0;
+  const afterReg = regularW * (1-pSave) * (1-pFnp);
 
-  const mwFrac   = mwNegateVal ? (7-mwNegateVal)/6 : 1;
+  const mwFrac    = mwNegateVal ? (7-mwNegateVal)/6 : 1;
   const effMortals = devastMW * mwFrac * (1-pFnp);
-  const totalUnsaved = afterFnpReg + effMortals;
+  const totalUnsaved = afterReg + effMortals;
 
-  // Damage
-  let dpw = DICE_AVG[damageType] ?? damageFixed;
+  // ── Damage ──
+  let dpw = DAVG[damageType] ?? damageFixed;
   if (m.melta) dpw += 3.5;
   const totalDmg = totalUnsaved * dpw;
   const slain    = Math.min(defModels, totalDmg / wpModel);
-  const hazMW    = m.hazardous ? totalAtk * (1/6) : 0;
+  const hazMW    = m.hazardous ? totalAtk*(1/6) : 0;
 
   // ── Render ──
   g('r-attacks').textContent = fmt(totalAtk);
@@ -777,7 +810,6 @@ function calculate() {
   g('r-dmg').textContent     = fmt(totalDmg);
   g('r-models').textContent  = fmt(slain);
 
-  // Flow pipeline
   g('flow-row').innerHTML = [
     {v:fmt(totalAtk),l:'Attacks'},
     {v:'×'+pct(pH),l:'Hit Chance',a:1},
@@ -792,44 +824,45 @@ function calculate() {
     `<div class="flow-step"><span class="flow-val">${s.v}</span><div class="flow-lbl">${s.l}</div></div>`
   ).join('');
 
-  // Wound threshold string
-  function wThr() {
+  function wThr(){
     let thr;
-    if (strength>=toughness*2) thr=2; else if (strength>toughness) thr=3;
-    else if (strength===toughness) thr=4; else if (strength*2<=toughness) thr=6; else thr=5;
+    if(strength>=toughness*2)thr=2;else if(strength>toughness)thr=3;
+    else if(strength===toughness)thr=4;else if(strength*2<=toughness)thr=6;else thr=5;
     let eff=thr;
     if(m.plusOneWound)eff=Math.max(2,eff-1);
     if(m.minusOneWound||m.woundModMinus1)eff=Math.min(6,eff+1);
     return eff+'+';
   }
-  function svStr() {
+  function svStr(){
     let eff=armourSave+ap; if(m.coverSave)eff=Math.max(2,eff-1);
-    if(invulnSave>0&&invulnSave<eff) return invulnSave+'++ (invuln)';
+    if(invulnSave>0&&invulnSave<eff)return invulnSave+'++ (invuln)';
     return eff>6?'No Save':eff+'+';
   }
-  function cc(p){ return p>=.6?'good':p>=.35?'warn':'bad'; }
+  function cc(p){return p>=.6?'good':p>=.35?'warn':'bad';}
 
   g('breakdown-rows').innerHTML = [
-    {k:'Critical hit threshold',          v:(m.critOn5?'5+':'6+')},
-    {k:'Effective hit chance',            v:pct(pH),    cls:cc(pH)},
-    {k:'Wound threshold (S'+strength+' vs T'+toughness+')', v:wThr()},
-    {k:'Effective wound chance',          v:pct(pW),    cls:cc(pW)},
-    {k:'Effective save used',             v:svStr()},
-    {k:'Save fail chance',                v:pct(1-pSave),cls:cc(1-pSave)},
-    {k:'Feel No Pain negation',           v:fnpVal?pct(pFnp):'None'},
-    {k:'Avg damage per unsaved wound',    v:fmt(dpw)},
-    {k:'Devastating mortal wounds',       v:m.devastatingWounds?fmt(devastMW):'0'},
-    {k:'Lethal Hit auto-wounds',          v:m.lethalHits?fmt(lethalAW):'0'},
+    {k:'Critical hit threshold',           v:(m.critOn5?'5+':'6+')},
+    {k:'Effective hit chance',             v:pct(pH),       cls:cc(pH)},
+    {k:`Wound threshold (S${strength} vs T${toughness})`, v:wThr()},
+    {k:'Effective wound chance',           v:pct(pW),       cls:cc(pW)},
+    {k:'Effective save used',              v:svStr()},
+    {k:'Save fail chance',                 v:pct(1-pSave),  cls:cc(1-pSave)},
+    {k:'Feel No Pain negation',            v:fnpVal?pct(pFnp):'None'},
+    {k:'Avg damage per unsaved wound',     v:fmt(dpw)},
+    {k:'Devastating mortal wounds',        v:m.devastatingWounds?fmt(devastMW):'0'},
+    {k:'Lethal Hit auto-wounds',           v:m.lethalHits?fmt(lethalAW):'0'},
     {k:'Hazardous self-mortals (attacker)',v:m.hazardous?fmt(hazMW):'0'},
-    {k:'Total damage dealt',              v:fmt(totalDmg)},
-    {k:'Estimated models slain',          v:fmt(slain)+' / '+defModels},
+    {k:'Total damage dealt',               v:fmt(totalDmg)},
+    {k:'Estimated models slain',           v:fmt(slain)+' / '+defModels},
   ].map(r=>`<div class="bd-row"><span class="bd-key">${r.k}</span><span class="bd-val ${r.cls||''}">${r.v}</span></div>`).join('');
 
-  g('results').style.display = 'block';
+  g('results').style.display='block';
   g('results').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-document.addEventListener('keydown', e => { if (e.key==='Enter') calculate(); });
+document.addEventListener('keydown', e=>{
+  if(e.key==='Enter'&&e.target.tagName!=='INPUT') calculate();
+});
 </script>
 </body>
 </html>
