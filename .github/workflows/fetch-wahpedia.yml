@@ -98,10 +98,10 @@ jobs:
 
           fs.mkdirSync("data", { recursive: true });
 
-          // ✅ These filenames match what your app expects:
+          // These filenames match what the app expects:
           fs.writeFileSync("data/datasheets.json", JSON.stringify(datasheets), "utf8");
           fs.writeFileSync("data/models.json", JSON.stringify(models), "utf8");
-          fs.writeFileSync("data/weapons.json", JSON.stringify(wargear), "utf8"); // wargear output -> weapons.json for your frontend
+          fs.writeFileSync("data/weapons.json", JSON.stringify(wargear), "utf8"); // wargear output -> weapons.json for frontend
           fs.writeFileSync("data/factions.json", JSON.stringify(factions), "utf8");
 
           // Helpful for debugging on the site:
