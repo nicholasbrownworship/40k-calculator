@@ -160,21 +160,10 @@
     .sim-box.featured .sim-value { color:var(--red-bright); font-size:2rem; }
     .sim-label { font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); margin-top:.35rem; font-weight:600; }
 
-    /* ── HISTOGRAM ── */
+    /* ── BAR CHART ── */
     .histogram-wrap { margin-top:1.1rem; padding-top:1rem; border-top:1px solid var(--border); }
-    .histogram-title { font-size:.65rem; letter-spacing:.16em; text-transform:uppercase; color:var(--text-dim); margin-bottom:.8rem; font-weight:700; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; }
-    .histogram-title .hist-legend { display:flex; gap:1rem; font-size:.65rem; color:var(--text-dim); align-items:center; font-family:'Rajdhani',sans-serif; letter-spacing:.04em; text-transform:none; font-weight:600; }
-    .histogram-title .hist-legend span { display:flex; align-items:center; gap:.3rem; }
-    .histogram-title .hist-legend i { display:inline-block; width:10px; height:10px; border-radius:2px; flex-shrink:0; }
-    #chart-svg { width:100%; display:block; overflow:visible; }
-    #chart-svg .grid-line { stroke:rgba(255,255,255,.06); stroke-width:1; }
-    #chart-svg .axis-line { stroke:var(--border); stroke-width:1; }
-    #chart-svg .axis-label { fill:var(--text-dim); font-family:'Rajdhani',sans-serif; font-size:11px; font-weight:600; }
-    #chart-svg .bar-normal { fill:var(--brass-dim); transition:fill .12s; cursor:pointer; }
-    #chart-svg .bar-normal:hover { fill:var(--brass); }
-    #chart-svg .bar-median { fill:var(--red); transition:fill .12s; cursor:pointer; }
-    #chart-svg .bar-median:hover { fill:var(--red-bright); }
-    #chart-svg .bar-avg { fill:none; stroke:var(--accent); stroke-width:1.5; stroke-dasharray:4 3; }
+    .histogram-title { font-size:.65rem; letter-spacing:.16em; text-transform:uppercase; color:var(--text-dim); margin-bottom:.8rem; font-weight:700; }
+    #chart-canvas { width:100%; display:block; border-radius:3px; }
     .chart-tooltip { position:fixed; background:var(--panel2); border:1px solid var(--border); border-radius:3px; padding:.35rem .6rem; font-size:.78rem; font-family:'Rajdhani',sans-serif; font-weight:600; color:var(--text); pointer-events:none; z-index:100; display:none; white-space:nowrap; box-shadow:0 4px 16px rgba(0,0,0,.4); }
     .sim-note { font-size:.7rem; color:var(--text-dim); margin-top:.9rem; padding-top:.8rem; border-top:1px solid var(--border); line-height:1.6; }
     .sim-note strong { color:var(--brass); }
@@ -507,7 +496,7 @@
               <span><i style="background:var(--accent);height:2px;width:16px;border-radius:0;"></i> Mean</span>
             </span>
           </div>
-          <svg id="chart-svg"></svg>
+          <canvas id="chart-canvas" height="280"></canvas>
           <div class="chart-tooltip" id="chart-tooltip"></div>
         </div>
         <div class="sim-note">
@@ -1284,118 +1273,197 @@ function simulate() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  SVG BAR CHART RENDERER
+//  BAR CHART RENDERER (Canvas)
 // ═══════════════════════════════════════════════════════════
-function renderHistogram(results, avg, median) {
-  const RUNS   = results.length;
-  const minD   = results[0];
-  const maxD   = results[RUNS - 1];
-  const range  = maxD - minD;
 
-  // Bucket: 1 damage value per bar if ≤ 40 unique values, otherwise group
-  const bucketSize = range <= 40 ? 1 : Math.ceil(range / 40);
+// Store bar rects for hit-testing on hover
+let chartBars = [];
+
+function renderHistogram(results, avg, median) {
+  const canvas  = document.getElementById('chart-canvas');
+  const tooltip = document.getElementById('chart-tooltip');
+  const RUNS    = results.length;
+  const minD    = results[0];
+  const maxD    = results[RUNS - 1];
+  const range   = maxD - minD;
+
+  // One bar per damage value up to 50 bars, otherwise bucket
+  const bucketSize = range < 50 ? 1 : Math.ceil(range / 50);
   const numBuckets = Math.ceil((range + 1) / bucketSize);
 
   const counts = new Array(numBuckets).fill(0);
   for (const v of results) {
-    const idx = Math.min(Math.floor((v - minD) / bucketSize), numBuckets - 1);
-    counts[idx]++;
+    const i = Math.min(Math.floor((v - minD) / bucketSize), numBuckets - 1);
+    counts[i]++;
   }
-
   const maxCount = Math.max(...counts);
 
-  // ── SVG dimensions ──────────────────────────────────────
-  const W        = 860;   // viewBox width  (scales with container)
-  const H        = 260;   // viewBox height
-  const padL     = 52;    // left  — y-axis labels
-  const padR     = 16;
-  const padT     = 16;
-  const padB     = 48;    // bottom — x-axis labels
-  const chartW   = W - padL - padR;
-  const chartH   = H - padT - padB;
+  // ── Canvas sizing ────────────────────────────────────────
+  const dpr  = window.devicePixelRatio || 1;
+  const cssW = canvas.parentElement.clientWidth || 600;
+  const cssH = 280;
+  canvas.style.width  = cssW + 'px';
+  canvas.style.height = cssH + 'px';
+  canvas.width  = cssW * dpr;
+  canvas.height = cssH * dpr;
 
-  const barGap   = Math.max(1, Math.floor(chartW / numBuckets * 0.15));
-  const barW     = Math.max(2, (chartW / numBuckets) - barGap);
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
 
-  // ── Helpers ─────────────────────────────────────────────
-  const xPos  = i  => padL + i * (chartW / numBuckets) + barGap / 2;
-  const yPos  = c  => padT + chartH - (c / maxCount) * chartH;
-  const barH  = c  => (c / maxCount) * chartH;
+  // ── Layout ───────────────────────────────────────────────
+  const padL = 52, padR = 20, padT = 28, padB = 44;
+  const cW   = cssW - padL - padR;
+  const cH   = cssH - padT - padB;
 
-  // ── Y-axis gridlines & labels (% scale) ─────────────────
-  const yTicks = [0, 25, 50, 75, 100]; // percent of max bar
-  let gridLines = '';
-  let yLabels   = '';
-  for (const pct of yTicks) {
-    const y      = padT + chartH - (pct / 100) * chartH;
-    const count  = Math.round((pct / 100) * maxCount);
-    const runPct = (count / RUNS * 100).toFixed(0);
-    gridLines += `<line class="grid-line" x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}"/>`;
-    yLabels   += `<text class="axis-label" x="${padL - 6}" y="${y + 4}" text-anchor="end">${runPct}%</text>`;
-  }
+  // ── Theme colours ────────────────────────────────────────
+  const COL = {
+    bg:        '#18181e',
+    grid:      'rgba(255,255,255,0.06)',
+    axis:      '#2a2a36',
+    label:     '#6a6560',
+    barNormal: '#7a5f1a',
+    barHover:  '#c49a2a',
+    barMedian: '#b83228',
+    barMedHov: '#e04030',
+    meanLine:  '#f0d070',
+    text:      '#d8d2ca',
+  };
 
-  // ── X-axis labels — show every Nth bar to avoid overlap ─
-  const minLabelSpacing = 28; // px between labels
-  const labelEvery = Math.max(1, Math.ceil(minLabelSpacing / (chartW / numBuckets)));
-  let xLabels = '';
-  for (let i = 0; i < numBuckets; i++) {
-    if (i % labelEvery !== 0 && i !== numBuckets - 1) continue;
-    const bMin  = minD + i * bucketSize;
-    const label = bucketSize === 1 ? String(bMin) : `${bMin}–${minD + (i + 1) * bucketSize - 1}`;
-    const x     = xPos(i) + barW / 2;
-    xLabels += `<text class="axis-label" x="${x}" y="${H - padB + 16}" text-anchor="middle">${label}</text>`;
+  // ── Clear ────────────────────────────────────────────────
+  ctx.fillStyle = COL.bg;
+  ctx.fillRect(0, 0, cssW, cssH);
+
+  // ── Y gridlines + labels (% of runs) ─────────────────────
+  ctx.font = '600 11px Rajdhani, sans-serif';
+  ctx.textBaseline = 'middle';
+  ctx.textAlign    = 'right';
+
+  const ySteps = [0, 0.25, 0.5, 0.75, 1.0];
+  for (const frac of ySteps) {
+    const y    = padT + cH - frac * cH;
+    const pct  = Math.round((frac * maxCount) / RUNS * 100);
+
+    ctx.strokeStyle = COL.grid;
+    ctx.lineWidth   = 1;
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(padL + cW, y);
+    ctx.stroke();
+
+    ctx.fillStyle = COL.label;
+    ctx.fillText(pct + '%', padL - 6, y);
   }
 
   // ── Bars ─────────────────────────────────────────────────
-  let bars = '';
-  for (let i = 0; i < numBuckets; i++) {
-    const bMin     = minD + i * bucketSize;
-    const bMax     = bMin + bucketSize - 1;
-    const x        = xPos(i);
-    const h        = Math.max(2, barH(counts[i]));
-    const y        = padT + chartH - h;
-    const isMedian = median >= bMin && median <= bMax;
-    const cls      = isMedian ? 'bar-median' : 'bar-normal';
-    const pct      = (counts[i] / RUNS * 100).toFixed(1);
-    const label    = bucketSize === 1 ? String(bMin) : `${bMin}–${bMax}`;
+  const totalBarSpace = cW / numBuckets;
+  const gap    = Math.max(1, totalBarSpace * 0.15);
+  const barW   = Math.max(2, totalBarSpace - gap);
 
-    bars += `<rect class="${cls}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}"
-      data-label="${label}" data-pct="${pct}" data-count="${counts[i]}"/>`;
+  chartBars = [];
+
+  for (let i = 0; i < numBuckets; i++) {
+    const bMin  = minD + i * bucketSize;
+    const bMax  = bMin + bucketSize - 1;
+    const h     = (counts[i] / maxCount) * cH;
+    const x     = padL + i * totalBarSpace + gap / 2;
+    const y     = padT + cH - h;
+    const isMed = median >= bMin && median <= bMax;
+
+    ctx.fillStyle = isMed ? COL.barMedian : COL.barNormal;
+    ctx.beginPath();
+    ctx.roundRect(x, y, barW, Math.max(2, h), [2, 2, 0, 0]);
+    ctx.fill();
+
+    // Store for tooltip hit-testing
+    chartBars.push({
+      x, y: padT, w: barW, h: cH,   // full column height for easy hover
+      bMin, bMax, count: counts[i],
+      pct: (counts[i] / RUNS * 100).toFixed(1),
+      isMed,
+    });
   }
 
-  // ── Mean dashed vertical line ────────────────────────────
-  const avgBucket  = Math.min(Math.floor((avg - minD) / bucketSize), numBuckets - 1);
-  const avgX       = xPos(avgBucket) + barW / 2;
-  const meanLine   = `<line class="bar-avg" x1="${avgX.toFixed(1)}" y1="${padT}" x2="${avgX.toFixed(1)}" y2="${padT + chartH}"/>
-    <text class="axis-label" x="${avgX.toFixed(1)}" y="${padT - 4}" text-anchor="middle" style="fill:var(--accent);font-size:10px;">mean ${avg}</text>`;
+  // ── X-axis labels ─────────────────────────────────────────
+  ctx.fillStyle    = COL.label;
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'top';
 
-  // ── Axis lines ───────────────────────────────────────────
-  const axes = `
-    <line class="axis-line" x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT + chartH}"/>
-    <line class="axis-line" x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}"/>`;
+  const minLabelGap = 30;
+  const labelEvery  = Math.max(1, Math.ceil(minLabelGap / totalBarSpace));
 
-  // ── X / Y axis titles ────────────────────────────────────
-  const xTitle = `<text class="axis-label" x="${padL + chartW / 2}" y="${H - 4}" text-anchor="middle" style="font-size:10px;fill:var(--text-dim);">Damage Dealt</text>`;
-  const yTitle = `<text class="axis-label" transform="rotate(-90)" x="${-(padT + chartH / 2)}" y="13" text-anchor="middle" style="font-size:10px;fill:var(--text-dim);">% of Runs</text>`;
+  for (let i = 0; i < numBuckets; i++) {
+    if (i % labelEvery !== 0 && i !== numBuckets - 1) continue;
+    const bMin = minD + i * bucketSize;
+    const x    = padL + i * totalBarSpace + totalBarSpace / 2;
+    ctx.fillText(String(bMin), x, padT + cH + 6);
+  }
 
-  // ── Assemble SVG ─────────────────────────────────────────
-  const svg = document.getElementById('chart-svg');
-  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svg.innerHTML = gridLines + yLabels + xLabels + axes + bars + meanLine + xTitle + yTitle;
+  // ── Axis lines ────────────────────────────────────────────
+  ctx.strokeStyle = COL.axis;
+  ctx.lineWidth   = 1;
+  ctx.beginPath();
+  ctx.moveTo(padL, padT);
+  ctx.lineTo(padL, padT + cH);
+  ctx.lineTo(padL + cW, padT + cH);
+  ctx.stroke();
 
-  // ── Tooltip on hover ─────────────────────────────────────
-  const tooltip = document.getElementById('chart-tooltip');
-  svg.querySelectorAll('rect').forEach(rect => {
-    rect.addEventListener('mousemove', e => {
-      tooltip.style.display  = 'block';
-      tooltip.style.left     = (e.clientX + 12) + 'px';
-      tooltip.style.top      = (e.clientY - 36) + 'px';
-      tooltip.innerHTML =
-        `<span style="color:var(--accent)">${rect.dataset.label} damage</span><br>` +
-        `${rect.dataset.pct}% of runs &nbsp;·&nbsp; ${rect.dataset.count} / ${RUNS}`;
-    });
-    rect.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
-  });
+  // ── Axis titles ───────────────────────────────────────────
+  ctx.fillStyle    = COL.label;
+  ctx.font         = '600 10px Rajdhani, sans-serif';
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText('Damage Dealt', padL + cW / 2, cssH);
+
+  ctx.save();
+  ctx.translate(12, padT + cH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.textBaseline = 'top';
+  ctx.fillText('% of Runs', 0, 0);
+  ctx.restore();
+
+  // ── Mean dashed line ──────────────────────────────────────
+  const avgBucket = Math.min(Math.floor((avg - minD) / bucketSize), numBuckets - 1);
+  const meanX     = padL + avgBucket * totalBarSpace + totalBarSpace / 2;
+
+  ctx.strokeStyle = COL.meanLine;
+  ctx.lineWidth   = 1.5;
+  ctx.setLineDash([4, 3]);
+  ctx.beginPath();
+  ctx.moveTo(meanX, padT);
+  ctx.lineTo(meanX, padT + cH);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle    = COL.meanLine;
+  ctx.font         = 'bold 11px Rajdhani, sans-serif';
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText('avg ' + avg, meanX, padT - 4);
+
+  // ── Hover tooltip ─────────────────────────────────────────
+  canvas.onmousemove = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mx   = e.clientX - rect.left;
+    const my   = e.clientY - rect.top;
+    const bar  = chartBars.find(b => mx >= b.x && mx <= b.x + b.w && my >= b.y && my <= b.y + b.h);
+
+    if (bar) {
+      const label = bar.bMin === bar.bMax ? `${bar.bMin} damage` : `${bar.bMin}–${bar.bMax} damage`;
+      tooltip.style.display = 'block';
+      tooltip.style.left    = (e.clientX + 14) + 'px';
+      tooltip.style.top     = (e.clientY - 40) + 'px';
+      tooltip.innerHTML     =
+        `<span style="color:var(--accent)">${label}</span><br>` +
+        `${bar.pct}% of runs &nbsp;·&nbsp; ${bar.count.toLocaleString()} / ${RUNS.toLocaleString()}`;
+      canvas.style.cursor = 'crosshair';
+    } else {
+      tooltip.style.display = 'none';
+      canvas.style.cursor   = 'default';
+    }
+  };
+  canvas.onmouseleave = () => {
+    tooltip.style.display = 'none';
+  };
 }
 </script>
 </body>
