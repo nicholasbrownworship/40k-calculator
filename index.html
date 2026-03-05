@@ -659,7 +659,11 @@ function applyDefender(dsId, name) {
 // ── Field helpers ──────────────────────────────────
 function selByVal(id, val) {
   const el = document.getElementById(id);
-  const o  = [...el.options].find(o=>parseInt(o.value)===parseInt(val));
+  // Try exact string match first (handles dice strings like 'd6', 'd3+1')
+  // then fall back to numeric match for numeric selects (AP, save, etc.)
+  const strVal = String(val);
+  const o = [...el.options].find(o => o.value === strVal)
+         || [...el.options].find(o => parseInt(o.value) === parseInt(val));
   if (o) el.value = o.value;
 }
 function setChk(id, v) { document.getElementById(id).checked = !!v; }
@@ -744,7 +748,7 @@ function calculate() {
   const strength     = parseInt(g('strength').value);
   const ap           = parseInt(g('ap').value);
   const damageType   = g('damageType').value;
-  const damageFixed  = parseFloat(g('damageFixed').value)||1;
+  const damageFixed  = parseFloat(g('damageFixed').value) ?? 1;
   const toughness    = parseInt(g('toughness').value);
   const wpModel      = parseInt(g('wounds').value);
   const armourSave   = parseInt(g('armourSave').value);
