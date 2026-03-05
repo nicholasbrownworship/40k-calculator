@@ -2,7 +2,7 @@ name: Fetch Wahapedia Data
 
 on:
   schedule:
-    - cron: "0 4 * * *"   # daily at 04:00 UTC
+    - cron: "0 4 * * *" # daily 04:00 UTC
   workflow_dispatch:
 
 jobs:
@@ -20,133 +20,117 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Fetch Wahapedia CSVs + build unit JSON
+      - name: Fetch Wahapedia CSVs and convert to JSON (no Python)
+        shell: bash
         run: |
           set -euo pipefail
+          mkdir -p tmp data
 
-          mkdir -p tmp data/raw
-
-          # UPDATED URL: Using the dedicated exporter subdomain
-          BASE="https://exporter.wahapedia.ru/10ed"
+          BASE="https://wahapedia.ru/wh40k10ed"
 
           fetch_csv () {
             local url="$1"
             local out="$2"
-
             echo "== Fetching: $url"
-            # Using a more standard browser User-Agent to avoid blocks
-            curl -fSsL --retry 3 --retry-delay 5 \
-              -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
-              -D "tmp/headers.txt" \
+            curl -fSsL --compressed \
+              --retry 8 --retry-delay 5 --retry-all-errors \
+              -A "40k-calculator/1.0 (+github actions)" \
+              -H "Accept: text/plain,*/*" \
               "$url" -o "$out"
 
-            # Fail if we got HTML (common when blocked/served an error page)
-            if head -c 200 "$out" | grep -qiE '<!doctype|<html'; then
-              echo "ERROR: Downloaded HTML instead of CSV from $url"
+            # If we got HTML, we're blocked or errored
+            if head -c 400 "$out" | grep -qiE '<!doctype|<html|cloudflare|access denied'; then
+              echo "ERROR: Got HTML/block page, not CSV: $url"
+              head -n 30 "$out" || true
               exit 1
             fi
 
-            # Check for pipe delimiters
+            # Must look pipe-delimited
             if ! head -n 5 "$out" | grep -q '|'; then
-              echo "ERROR: File does not look pipe-delimited: $out"
+              echo "ERROR: Not pipe-delimited CSV: $url"
+              head -n 30 "$out" || true
               exit 1
             fi
-
-            echo "-- OK: $(wc -c < "$out") bytes"
           }
 
-          fetch_csv "$BASE/Datasheets.csv"           "tmp/Datasheets.csv"
-          fetch_csv "$BASE/Datasheets_models.csv"    "tmp/Datasheets_models.csv"
-          fetch_csv "$BASE/Datasheets_wargear.csv"   "tmp/Datasheets_wargear.csv"
-          fetch_csv "$BASE/Factions.csv"             "tmp/Factions.csv"
+          fetch_csv "$BASE/Datasheets.csv"          "tmp/Datasheets.csv"
+          fetch_csv "$BASE/Datasheets_models.csv"   "tmp/Datasheets_models.csv"
+          fetch_csv "$BASE/Datasheets_wargear.csv"  "tmp/Datasheets_wargear.csv"
+          fetch_csv "$BASE/Factions.csv"            "tmp/Factions.csv"
 
           node <<'NODE'
           const fs = require("fs");
 
           function stripBom(s){ return s.replace(/^\uFEFF/, ""); }
-
-          /**
-           * Robust Pipe Parser
-           * Now automatically detects headers from the first row.
-           */
-          function parsePipe(raw){
+          function parsePipe(raw, headers){
             raw = stripBom(raw);
             const lines = raw.split(/\r?\n/).filter(l => l.trim().length);
-            if (lines.length === 0) return [];
-
-            // The first line contains the column names (id|name|faction_id|...)
-            const headers = lines[0].split("|").map(h => h.trim());
-            const results = [];
-
-            for (let i = 1; i < lines.length; i++){
-              const cols = lines[i].split("|");
+            const out = [];
+            for (const line of lines){
+              const cols = line.split("|");
               const row = {};
-              headers.forEach((header, index) => {
-                row[header] = (cols[index] ?? "").trim();
-              });
-              results.push(row);
+              for (let i = 0; i < headers.length; i++){
+                row[headers[i]] = (cols[i] ?? "").trim();
+              }
+              out.push(row);
             }
-            return results;
+            return out;
           }
 
-          function writeJson(filePath, obj){
-            fs.writeFileSync(filePath, JSON.stringify(obj, null, 2), "utf8");
-            console.log(` -> ${filePath}: ${obj.length} rows`);
-          }
+          const H = {
+            datasheets: ["id","name","faction_id","source_id","legend","role","loadout","transport","virtual","leader_head","leader_footer","damaged_w","damaged_description","link"],
+            models: ["datasheet_id","line","name","M","T","Sv","inv_sv","inv_sv_descr","W","Ld","OC","base_size","base_size_descr"],
+            wargear: ["datasheet_id","line","line_in_wargear","dice","name","description","range","type","A","BS_WS","S","AP","D"],
+            factions: ["id","name","link"]
+          };
 
-          // Load files
-          const datasheets = parsePipe(fs.readFileSync("tmp/Datasheets.csv","utf8"));
-          const models     = parsePipe(fs.readFileSync("tmp/Datasheets_models.csv","utf8"));
-          const wargear    = parsePipe(fs.readFileSync("tmp/Datasheets_wargear.csv","utf8"));
-          const factions   = parsePipe(fs.readFileSync("tmp/Factions.csv","utf8"));
+          const datasheets = parsePipe(fs.readFileSync("tmp/Datasheets.csv","utf8"), H.datasheets);
+          const models     = parsePipe(fs.readFileSync("tmp/Datasheets_models.csv","utf8"), H.models);
+          const wargear    = parsePipe(fs.readFileSync("tmp/Datasheets_wargear.csv","utf8"), H.wargear);
+          const factions   = parsePipe(fs.readFileSync("tmp/Factions.csv","utf8"), H.factions);
 
-          // Data Integrity Check
-          if (!datasheets.length || !datasheets[0].name) {
-            console.error("ERROR: Data parsed but is empty or missing 'name' field.");
+          // Hard fail if we somehow parsed nothing
+          const sample = datasheets.find(d => d.id && d.name);
+          if (!sample) {
+            console.error("ERROR: datasheets parsed but produced no {id,name}. Aborting.");
             process.exit(1);
           }
 
-          // Mapping logic
-          const factionMap = new Map(factions.map(f => [f.id, f.name]));
-          const modelsBySheet = new Map();
-          models.forEach(m => {
-            if(!modelsBySheet.has(m.datasheet_id)) modelsBySheet.set(m.datasheet_id, []);
-            modelsBySheet.get(m.datasheet_id).push(m);
-          });
-          const wargearBySheet = new Map();
-          wargear.forEach(w => {
-            if(!wargearBySheet.has(w.datasheet_id)) wargearBySheet.set(w.datasheet_id, []);
-            wargearBySheet.get(w.datasheet_id).push(w);
-          });
-
-          // Build Final JSON
-          const units = datasheets.map(d => ({
-            id: d.id,
-            name: d.name,
-            faction: factionMap.get(d.faction_id) || "Unknown",
-            role: d.role,
-            models: (modelsBySheet.get(d.id) || []).map(m => ({
-              name: m.name, M: m.M, T: m.T, Sv: m.Sv, inv: m.inv_sv, W: m.W, Ld: m.Ld, OC: m.OC
-            })),
-            wargear: (wargearBySheet.get(d.id) || []).map(w => ({
-              name: w.name, range: w.range, type: w.type, A: w.A, S: w.S, AP: m.AP, D: m.D
-            }))
-          }));
-
           fs.mkdirSync("data", { recursive: true });
-          writeJson("data/units.json", units);
-          writeJson("data/factions.json", factions);
-          
-          console.log("Build Complete: " + units.length + " units processed.");
+
+          // ✅ These filenames match what your app expects:
+          fs.writeFileSync("data/datasheets.json", JSON.stringify(datasheets), "utf8");
+          fs.writeFileSync("data/models.json", JSON.stringify(models), "utf8");
+          fs.writeFileSync("data/weapons.json", JSON.stringify(wargear), "utf8"); // wargear output -> weapons.json for your frontend
+          fs.writeFileSync("data/factions.json", JSON.stringify(factions), "utf8");
+
+          // Helpful for debugging on the site:
+          fs.writeFileSync("data/build-summary.json", JSON.stringify({
+            generatedAt: new Date().toISOString(),
+            datasheets: datasheets.length,
+            models: models.length,
+            weapons: wargear.length,
+            factions: factions.length,
+            sampleUnit: sample.name
+          }, null, 2), "utf8");
+
+          console.log("Wrote JSON:",
+            datasheets.length, "datasheets |",
+            models.length, "models |",
+            wargear.length, "weapons |",
+            factions.length, "factions"
+          );
           NODE
 
       - name: Commit updated data files
+        shell: bash
         run: |
-          git config user.name "github-actions[bot]"
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/
           if git diff --cached --quiet; then
-            echo "No changes."
+            echo "No changes — skipping commit."
           else
             git commit -m "chore: update Wahapedia data [$(date -u +%Y-%m-%d)]"
             git push
