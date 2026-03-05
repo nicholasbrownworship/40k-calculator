@@ -9,433 +9,194 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg:        #0c0c0e;
-      --surface:   #121216;
-      --panel:     #18181e;
-      --panel2:    #1e1e26;
-      --border:    #2a2a36;
-      --brass:     #c49a2a;
-      --brass-dim: #7a5f1a;
-      --red:       #b83228;
-      --red-bright:#e04030;
-      --red-dim:   #6a1a12;
-      --green:     #2ecc71;
-      --text:      #d8d2ca;
-      --text-dim:  #6a6560;
-      --accent:    #f0d070;
+      --bg:#0c0c0e; --surface:#121216; --panel:#18181e; --panel2:#1e1e26;
+      --border:#2a2a36; --brass:#c49a2a; --brass-dim:#7a5f1a;
+      --red:#b83228; --red-bright:#e04030; --red-dim:#6a1a12;
+      --green:#2ecc71; --text:#d8d2ca; --text-dim:#6a6560; --accent:#f0d070;
     }
-
     html { scroll-behavior: smooth; }
-
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 15px;
-      min-height: 100vh;
+      background: var(--bg); color: var(--text);
+      font-family: 'Rajdhani', sans-serif; font-size: 15px; min-height: 100vh;
       background-image:
-        repeating-linear-gradient(0deg, transparent, transparent 48px, rgba(42,42,54,0.18) 48px, rgba(42,42,54,0.18) 49px),
-        repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(42,42,54,0.18) 48px, rgba(42,42,54,0.18) 49px);
+        repeating-linear-gradient(0deg,transparent,transparent 48px,rgba(42,42,54,.18) 48px,rgba(42,42,54,.18) 49px),
+        repeating-linear-gradient(90deg,transparent,transparent 48px,rgba(42,42,54,.18) 48px,rgba(42,42,54,.18) 49px);
     }
+    .app { max-width: 1040px; margin: 0 auto; padding: 2rem 1rem 5rem; }
 
-    .app {
-      max-width: 1020px;
-      margin: 0 auto;
-      padding: 2rem 1rem 5rem;
-    }
-
-    /* ── HEADER ── */
-    .header {
-      text-align: center;
-      margin-bottom: 2.5rem;
-      padding: 0 1rem;
-    }
-    .header-rule {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 0.8rem;
-    }
-    .header-rule::before, .header-rule::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--brass));
-    }
-    .header-rule::after { background: linear-gradient(to left, transparent, var(--brass)); }
+    /* HEADER */
+    .header { text-align: center; margin-bottom: 2rem; }
+    .header-rule { display: flex; align-items: center; gap: 1rem; margin-bottom: .8rem; }
+    .header-rule::before { content:''; flex:1; height:1px; background:linear-gradient(to right,transparent,var(--brass)); }
+    .header-rule::after  { content:''; flex:1; height:1px; background:linear-gradient(to left,transparent,var(--brass)); }
     .skull { font-size: 1.4rem; color: var(--brass); }
-    .header h1 {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(1.4rem, 4vw, 2.2rem);
-      font-weight: 800;
-      color: var(--accent);
-      letter-spacing: 0.12em;
-      text-shadow: 0 0 40px rgba(196,154,42,0.35);
-      line-height: 1.1;
-    }
-    .header-sub {
-      color: var(--text-dim);
-      font-size: 0.75rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      margin-top: 0.5rem;
-    }
+    .header h1 { font-family:'Cinzel',serif; font-size:clamp(1.4rem,4vw,2.2rem); font-weight:800; color:var(--accent); letter-spacing:.12em; text-shadow:0 0 40px rgba(196,154,42,.35); line-height:1.1; }
+    .header-sub { color:var(--text-dim); font-size:.75rem; letter-spacing:.25em; text-transform:uppercase; margin-top:.5rem; }
 
-    /* ── TWO-COL LAYOUT ── */
-    .columns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
+    /* SEARCH ZONE */
+    .search-zone { background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:1.1rem 1.25rem; margin-bottom:1rem; position:relative; }
+    .search-zone::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:4px 4px 0 0; background:linear-gradient(to right,var(--brass-dim),var(--brass),var(--brass-dim)); }
+    .search-title { font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.2em; text-transform:uppercase; color:var(--brass); margin-bottom:.9rem; }
+    .search-cols { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+    @media(max-width:600px){ .search-cols{ grid-template-columns:1fr; } }
+    .search-col-label { font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); font-weight:700; margin-bottom:.4rem; }
+    .search-input-wrap { position:relative; }
+    .search-input {
+      width:100%; background:var(--surface); border:1px solid var(--border); border-radius:3px;
+      color:var(--text); font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:600;
+      padding:.42rem .6rem; outline:none; transition:border-color .15s;
     }
-    @media (max-width: 660px) { .columns { grid-template-columns: 1fr; } }
+    .search-input:focus { border-color:var(--brass); }
+    .search-input::placeholder { color:var(--text-dim); font-weight:400; }
+    .search-dropdown {
+      position:absolute; top:calc(100% + 3px); left:0; right:0; z-index:200;
+      background:var(--panel2); border:1px solid var(--border); border-radius:3px;
+      max-height:220px; overflow-y:auto; display:none; box-shadow:0 8px 24px rgba(0,0,0,.5);
+    }
+    .search-dropdown.open { display:block; }
+    .sdrop-item { padding:.42rem .7rem; cursor:pointer; font-size:.88rem; font-weight:600; border-bottom:1px solid rgba(255,255,255,.04); transition:background .1s; }
+    .sdrop-item:last-child { border-bottom:none; }
+    .sdrop-item:hover { background:var(--panel); }
+    .sdrop-faction { font-size:.63rem; color:var(--brass-dim); display:block; margin-top:1px; }
+    .search-status { font-size:.73rem; color:var(--text-dim); margin-top:.4rem; min-height:1.1rem; }
+    .search-status.ok   { color:var(--green); }
+    .search-status.err  { color:var(--red-bright); }
+    .search-status.load { color:var(--brass); }
+    .weapon-select-wrap { margin-top:.6rem; display:none; }
+    .weapon-select-label { font-size:.65rem; letter-spacing:.12em; text-transform:uppercase; color:var(--brass-dim); font-weight:700; margin-bottom:.3rem; }
+    .weapon-select { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:3px; color:var(--text); font-family:'Rajdhani',sans-serif; font-size:.9rem; font-weight:600; padding:.38rem .5rem; outline:none; }
+    .weapon-select:focus { border-color:var(--brass); }
+    .weapon-select option { background:var(--surface); }
 
-    /* ── PANEL ── */
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 1.25rem;
-      position: relative;
-    }
-    .panel::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      border-radius: 4px 4px 0 0;
-      background: linear-gradient(to right, var(--brass-dim), var(--brass), var(--brass-dim));
-    }
-    .panel-title {
-      font-family: 'Cinzel', serif;
-      font-size: 0.72rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--brass);
-      margin-bottom: 1.1rem;
-      padding-bottom: 0.6rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
+    /* COLUMNS */
+    .columns { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    @media(max-width:660px){ .columns{ grid-template-columns:1fr; } }
 
-    /* ── FIELDS ── */
-    .field { margin-bottom: 0.9rem; }
-    .field:last-child { margin-bottom: 0; }
-    .field > label {
-      display: block;
-      font-size: 0.7rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      margin-bottom: 0.28rem;
-      font-weight: 600;
-    }
-    .field-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-    .field-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; }
+    /* PANEL */
+    .panel { background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:1.25rem; position:relative; }
+    .panel::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:4px 4px 0 0; background:linear-gradient(to right,var(--brass-dim),var(--brass),var(--brass-dim)); }
+    .panel-title { font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.2em; text-transform:uppercase; color:var(--brass); margin-bottom:1.1rem; padding-bottom:.6rem; border-bottom:1px solid var(--border); }
 
+    /* FIELDS */
+    .field { margin-bottom:.9rem; }
+    .field:last-child { margin-bottom:0; }
+    .field > label { display:block; font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); margin-bottom:.28rem; font-weight:600; }
+    .field-row { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }
     input[type="number"], select {
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      color: var(--text);
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      padding: 0.38rem 0.6rem;
-      outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s;
-      -moz-appearance: textfield;
+      width:100%; background:var(--surface); border:1px solid var(--border); border-radius:3px;
+      color:var(--text); font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:700;
+      padding:.38rem .6rem; outline:none; transition:border-color .15s; -moz-appearance:textfield;
     }
     input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
-    input[type="number"]:focus, select:focus {
-      border-color: var(--brass);
-      box-shadow: 0 0 0 2px rgba(196,154,42,0.12);
-    }
-    select option { background: var(--surface); }
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance:none; }
+    input[type="number"]:focus, select:focus { border-color:var(--brass); box-shadow:0 0 0 2px rgba(196,154,42,.12); }
+    select option { background:var(--surface); }
 
-    input[type="number"].small { font-size: 0.9rem; }
+    /* SECTION DIVIDER */
+    .sdivider { font-size:.65rem; letter-spacing:.18em; text-transform:uppercase; color:var(--brass-dim); font-weight:700; margin:1rem 0 .65rem; display:flex; align-items:center; gap:.5rem; }
+    .sdivider::after { content:''; flex:1; height:1px; background:var(--border); }
 
-    /* ── SECTION DIVIDER ── */
-    .sdivider {
-      font-size: 0.65rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--brass-dim);
-      font-weight: 700;
-      margin: 1rem 0 0.65rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .sdivider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
+    /* CHECKBOXES */
+    .check-grid { display:grid; grid-template-columns:1fr 1fr; gap:.3rem; }
+    .check-label { display:flex; align-items:center; gap:.45rem; font-size:.78rem; letter-spacing:.04em; cursor:pointer; padding:.28rem .45rem; border:1px solid transparent; border-radius:3px; transition:all .12s; user-select:none; line-height:1.2; }
+    .check-label:hover { background:var(--surface); border-color:var(--border); }
+    .check-label input[type="checkbox"] { appearance:none; width:14px; height:14px; min-width:14px; border:1px solid var(--border); border-radius:2px; background:var(--surface); cursor:pointer; transition:all .12s; position:relative; flex-shrink:0; }
+    .check-label input[type="checkbox"]:checked { background:var(--brass); border-color:var(--brass); }
+    .check-label input[type="checkbox"]:checked::after { content:'✓'; position:absolute; top:-1px; left:1px; font-size:11px; color:#000; font-weight:900; }
 
-    /* ── CHECKBOXES ── */
-    .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem; }
-    .check-label {
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-      font-size: 0.78rem;
-      letter-spacing: 0.04em;
-      cursor: pointer;
-      padding: 0.28rem 0.45rem;
-      border: 1px solid transparent;
-      border-radius: 3px;
-      transition: all 0.12s;
-      user-select: none;
-      line-height: 1.2;
-    }
-    .check-label:hover { background: var(--surface); border-color: var(--border); }
-    .check-label input[type="checkbox"] {
-      appearance: none;
-      width: 14px; height: 14px;
-      min-width: 14px;
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      background: var(--surface);
-      cursor: pointer;
-      transition: all 0.12s;
-      position: relative;
-    }
-    .check-label input[type="checkbox"]:checked {
-      background: var(--brass);
-      border-color: var(--brass);
-    }
-    .check-label input[type="checkbox"]:checked::after {
-      content: '✓';
-      position: absolute;
-      top: -1px; left: 1px;
-      font-size: 11px;
-      color: #000;
-      font-weight: 900;
-    }
+    /* BUTTON */
+    .calc-btn { display:block; width:100%; margin-top:1.25rem; padding:.85rem; background:linear-gradient(160deg,var(--red-dim),var(--red)); border:1px solid var(--red); border-radius:3px; color:#fff; font-family:'Cinzel',serif; font-size:.9rem; font-weight:600; letter-spacing:.2em; text-transform:uppercase; cursor:pointer; transition:all .18s; }
+    .calc-btn:hover { background:linear-gradient(160deg,var(--red),var(--red-bright)); box-shadow:0 0 24px rgba(184,50,40,.45); transform:translateY(-1px); }
+    .calc-btn:active { transform:translateY(0); }
 
-    /* ── CALCULATE BUTTON ── */
-    .calc-btn {
-      display: block;
-      width: 100%;
-      margin-top: 1.25rem;
-      padding: 0.85rem;
-      background: linear-gradient(160deg, var(--red-dim) 0%, var(--red) 100%);
-      border: 1px solid var(--red);
-      border-radius: 3px;
-      color: #fff;
-      font-family: 'Cinzel', serif;
-      font-size: 0.9rem;
-      font-weight: 600;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.18s;
-    }
-    .calc-btn:hover {
-      background: linear-gradient(160deg, var(--red) 0%, var(--red-bright) 100%);
-      box-shadow: 0 0 24px rgba(184,50,40,0.45);
-      transform: translateY(-1px);
-    }
-    .calc-btn:active { transform: translateY(0); }
+    /* RESULTS */
+    #results { margin-top:1.25rem; display:none; }
+    .results-panel { background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:1.25rem; position:relative; }
+    .results-panel::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:4px 4px 0 0; background:linear-gradient(to right,var(--red-dim),var(--red-bright),var(--red-dim)); }
+    .results-title { font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.2em; text-transform:uppercase; color:var(--red-bright); margin-bottom:1.1rem; padding-bottom:.6rem; border-bottom:1px solid var(--border); }
+    .stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.75rem; }
+    @media(max-width:500px){ .stat-grid{ grid-template-columns:repeat(2,1fr); } }
+    .stat-box { background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:.9rem .5rem .7rem; text-align:center; transition:border-color .2s; }
+    .stat-box:hover { border-color:var(--brass-dim); }
+    .stat-box.featured { border-color:var(--red); background:var(--panel2); }
+    .stat-value { font-family:'Cinzel',serif; font-size:1.75rem; font-weight:800; color:var(--accent); line-height:1; }
+    .stat-box.featured .stat-value { color:var(--red-bright); font-size:2.2rem; }
+    .stat-label { font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); margin-top:.35rem; font-weight:600; }
+    .flow { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:.3rem; margin-top:1.1rem; padding-top:1rem; border-top:1px solid var(--border); }
+    .flow-step { text-align:center; }
+    .flow-val { font-size:1rem; font-weight:700; color:var(--text); }
+    .flow-lbl { font-size:.58rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim); font-weight:600; }
+    .flow-arrow { color:var(--brass-dim); font-size:1.1rem; padding:0 .1rem; }
+    .breakdown { margin-top:1.1rem; padding-top:1rem; border-top:1px solid var(--border); }
+    .breakdown-title { font-size:.65rem; letter-spacing:.16em; text-transform:uppercase; color:var(--text-dim); margin-bottom:.6rem; font-weight:700; }
+    .bd-row { display:flex; justify-content:space-between; align-items:center; padding:.3rem .5rem; border-radius:2px; font-size:.82rem; }
+    .bd-row:nth-child(even) { background:rgba(255,255,255,.02); }
+    .bd-key { color:var(--text-dim); }
+    .bd-val { font-weight:700; color:var(--text); }
+    .bd-val.good { color:var(--green); }
+    .bd-val.warn { color:var(--accent); }
+    .bd-val.bad  { color:var(--red-bright); }
 
-    /* ── RESULTS ── */
-    #results { margin-top: 1.25rem; display: none; }
+    /* TOOLTIP */
+    .tip { display:inline-block; width:13px; height:13px; border-radius:50%; background:var(--panel2); border:1px solid var(--border); color:var(--text-dim); font-size:9px; text-align:center; line-height:13px; cursor:help; vertical-align:middle; margin-left:3px; position:relative; }
+    .tip:hover::after { content:attr(data-tip); position:absolute; bottom:120%; left:50%; transform:translateX(-50%); background:var(--panel2); border:1px solid var(--border); color:var(--text); padding:.4rem .6rem; border-radius:3px; font-size:.7rem; white-space:nowrap; pointer-events:none; z-index:10; letter-spacing:.04em; font-family:'Rajdhani',sans-serif; min-width:180px; max-width:260px; white-space:normal; }
 
-    .results-panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 1.25rem;
-      position: relative;
-    }
-    .results-panel::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      border-radius: 4px 4px 0 0;
-      background: linear-gradient(to right, var(--red-dim), var(--red-bright), var(--red-dim));
-    }
-    .results-title {
-      font-family: 'Cinzel', serif;
-      font-size: 0.72rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--red-bright);
-      margin-bottom: 1.1rem;
-      padding-bottom: 0.6rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    /* stat boxes */
-    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
-    @media (max-width: 500px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
-
-    .stat-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 0.9rem 0.5rem 0.7rem;
-      text-align: center;
-      transition: border-color 0.2s;
-    }
-    .stat-box:hover { border-color: var(--brass-dim); }
-    .stat-box.featured {
-      border-color: var(--red);
-      background: var(--panel2);
-    }
-    .stat-value {
-      font-family: 'Cinzel', serif;
-      font-size: 1.75rem;
-      font-weight: 800;
-      color: var(--accent);
-      line-height: 1;
-    }
-    .stat-box.featured .stat-value {
-      color: var(--red-bright);
-      font-size: 2.2rem;
-    }
-    .stat-label {
-      font-size: 0.62rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      margin-top: 0.35rem;
-      font-weight: 600;
-    }
-
-    /* flow pipeline */
-    .flow {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 0.3rem;
-      margin-top: 1.1rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border);
-    }
-    .flow-step { text-align: center; }
-    .flow-val {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-    .flow-lbl {
-      font-size: 0.58rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      font-weight: 600;
-    }
-    .flow-arrow { color: var(--brass-dim); font-size: 1.1rem; padding: 0 0.1rem; }
-
-    /* breakdown table */
-    .breakdown {
-      margin-top: 1.1rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border);
-    }
-    .breakdown-title {
-      font-size: 0.65rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      margin-bottom: 0.6rem;
-      font-weight: 700;
-    }
-    .bd-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.3rem 0.5rem;
-      border-radius: 2px;
-      font-size: 0.82rem;
-    }
-    .bd-row:nth-child(even) { background: rgba(255,255,255,0.02); }
-    .bd-key { color: var(--text-dim); }
-    .bd-val { font-weight: 700; color: var(--text); }
-    .bd-val.good  { color: var(--green); }
-    .bd-val.warn  { color: var(--accent); }
-    .bd-val.bad   { color: var(--red-bright); }
-
-    /* tooltip helper */
-    .tip {
-      display: inline-block;
-      width: 13px; height: 13px;
-      border-radius: 50%;
-      background: var(--panel2);
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      font-size: 9px;
-      text-align: center;
-      line-height: 13px;
-      cursor: help;
-      vertical-align: middle;
-      margin-left: 3px;
-      position: relative;
-    }
-    .tip:hover::after {
-      content: attr(data-tip);
-      position: absolute;
-      bottom: 120%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--panel2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.4rem 0.6rem;
-      border-radius: 3px;
-      font-size: 0.7rem;
-      white-space: nowrap;
-      pointer-events: none;
-      z-index: 10;
-      letter-spacing: 0.04em;
-      font-family: 'Rajdhani', sans-serif;
-    }
-
-    /* error */
-    .error-msg {
-      background: rgba(184,50,40,0.15);
-      border: 1px solid var(--red);
-      border-radius: 3px;
-      padding: 0.6rem 0.8rem;
-      font-size: 0.8rem;
-      color: #f08070;
-      margin-top: 0.6rem;
-      display: none;
-    }
-
-    /* footnote */
-    .footnote {
-      text-align: center;
-      color: var(--text-dim);
-      font-size: 0.68rem;
-      letter-spacing: 0.1em;
-      margin-top: 2.5rem;
-    }
-    .footnote a { color: var(--brass-dim); text-decoration: none; }
-    .footnote a:hover { color: var(--brass); }
+    .footnote { text-align:center; color:var(--text-dim); font-size:.68rem; letter-spacing:.1em; margin-top:2.5rem; }
+    .footnote a { color:var(--brass-dim); text-decoration:none; }
+    .footnote a:hover { color:var(--brass); }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- ── HEADER ── -->
+  <!-- HEADER -->
   <div class="header">
     <div class="header-rule"><span class="skull">☠</span></div>
     <h1>WARHAMMER 40,000<br>COMBAT CALCULATOR</h1>
     <p class="header-sub">Average Damage &amp; Attack Resolution · 10th Edition</p>
   </div>
 
-  <!-- ── INPUT COLUMNS ── -->
+  <!-- UNIT SEARCH -->
+  <div class="search-zone">
+    <div class="search-title">⚙ Unit Search — Powered by Wahapedia</div>
+    <div class="search-cols">
+
+      <!-- Attacker search -->
+      <div>
+        <div class="search-col-label">Attacker Unit</div>
+        <div class="search-input-wrap">
+          <input class="search-input" type="text" id="atkSearch"
+            placeholder="e.g. Space Marine Tactical Squad…"
+            autocomplete="off"
+            oninput="onSearchInput('atk')"
+            onfocus="onSearchFocus('atk')" />
+          <div class="search-dropdown" id="atkDrop"></div>
+        </div>
+        <div class="search-status" id="atkStatus"></div>
+        <div class="weapon-select-wrap" id="weaponWrap">
+          <div class="weapon-select-label">Select Weapon Profile</div>
+          <select class="weapon-select" id="weaponPicker" onchange="applyWeapon()"></select>
+        </div>
+      </div>
+
+      <!-- Defender search -->
+      <div>
+        <div class="search-col-label">Defender Unit</div>
+        <div class="search-input-wrap">
+          <input class="search-input" type="text" id="defSearch"
+            placeholder="e.g. Ork Boyz…"
+            autocomplete="off"
+            oninput="onSearchInput('def')"
+            onfocus="onSearchFocus('def')" />
+          <div class="search-dropdown" id="defDrop"></div>
+        </div>
+        <div class="search-status" id="defStatus"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INPUT COLUMNS -->
   <div class="columns">
 
     <!-- ATTACKER -->
@@ -446,9 +207,8 @@
         <label>Number of Models Attacking</label>
         <input type="number" id="numModels" value="5" min="1" max="500" />
       </div>
-
       <div class="field">
-        <label>Attacks per Model <span class="tip" data-tip="Fixed number or average of a dice value (e.g. 3 or 2d3=4)">?</span></label>
+        <label>Attacks per Model</label>
         <div class="field-row">
           <select id="attacksType">
             <option value="fixed">Fixed</option>
@@ -461,14 +221,13 @@
             <option value="d6+2">D6+2 (avg 5.5)</option>
             <option value="d6+3">D6+3 (avg 6.5)</option>
           </select>
-          <input type="number" id="attacksFixed" value="2" min="1" max="100" placeholder="count" />
+          <input type="number" id="attacksFixed" value="2" min="1" max="100" />
         </div>
       </div>
 
       <div class="sdivider">To Hit</div>
-
       <div class="field">
-        <label>Weapon Skill / Ballistic Skill <span class="tip" data-tip="The minimum roll needed to hit (e.g. 3 = 3+)">?</span></label>
+        <label>Weapon Skill / Ballistic Skill</label>
         <select id="skill">
           <option value="2">2+</option>
           <option value="3" selected>3+</option>
@@ -477,40 +236,56 @@
           <option value="6">6+</option>
         </select>
       </div>
-
       <div class="check-grid">
         <label class="check-label"><input type="checkbox" id="rerollHit1" /> Re-roll Hit 1s</label>
         <label class="check-label"><input type="checkbox" id="rerollHitAll" /> Re-roll All Hits</label>
         <label class="check-label"><input type="checkbox" id="plusOneHit" /> +1 to Hit</label>
         <label class="check-label"><input type="checkbox" id="minusOneHit" /> −1 to Hit</label>
-        <label class="check-label"><input type="checkbox" id="sustainedHits1" /> Sustained Hits 1 <span class="tip" data-tip="Critical hits (6+) generate 1 extra hit">?</span></label>
-        <label class="check-label"><input type="checkbox" id="lethalHits" /> Lethal Hits <span class="tip" data-tip="Critical hits auto-wound, skip wound roll">?</span></label>
-        <label class="check-label"><input type="checkbox" id="torrent" /> Torrent <span class="tip" data-tip="Auto-hits, no to-hit roll needed">?</span></label>
-        <label class="check-label"><input type="checkbox" id="twinLinked" /> Twin-linked <span class="tip" data-tip="Re-roll wound rolls of 1">?</span></label>
+        <label class="check-label"><input type="checkbox" id="critOn5" /> Crits on 5+
+          <span class="tip" data-tip="Many armies (e.g. Orks Waaagh!, Necrons stratagem, Votann) trigger Critical Hits on 5+ instead of the usual 6+. Affects Lethal Hits, Sustained Hits, Devastating Wounds.">?</span>
+        </label>
+        <label class="check-label"><input type="checkbox" id="sustainedHits1" /> Sustained Hits 1
+          <span class="tip" data-tip="Each Critical Hit generates 1 extra hit">?</span>
+        </label>
+        <label class="check-label"><input type="checkbox" id="sustainedHits2" /> Sustained Hits 2
+          <span class="tip" data-tip="Each Critical Hit generates 2 extra hits">?</span>
+        </label>
+        <label class="check-label"><input type="checkbox" id="lethalHits" /> Lethal Hits
+          <span class="tip" data-tip="Critical Hits auto-wound — no wound roll needed">?</span>
+        </label>
+        <label class="check-label"><input type="checkbox" id="torrent" /> Torrent
+          <span class="tip" data-tip="Auto-hits — no to-hit roll required">?</span>
+        </label>
+        <label class="check-label"><input type="checkbox" id="heavyWeapon" /> Heavy (stationary)
+          <span class="tip" data-tip="+1 to Hit if unit didn't move this turn">?</span>
+        </label>
+        <label class="check-label"><input type="checkbox" id="twinLinked" /> Twin-linked
+          <span class="tip" data-tip="Re-roll wound rolls of 1">?</span>
+        </label>
       </div>
 
       <div class="sdivider">To Wound</div>
-
       <div class="field">
         <label>Strength</label>
         <input type="number" id="strength" value="4" min="1" max="30" />
       </div>
-
       <div class="check-grid">
         <label class="check-label"><input type="checkbox" id="rerollWound1" /> Re-roll Wound 1s</label>
         <label class="check-label"><input type="checkbox" id="rerollWoundAll" /> Re-roll All Wounds</label>
         <label class="check-label"><input type="checkbox" id="plusOneWound" /> +1 to Wound</label>
         <label class="check-label"><input type="checkbox" id="minusOneWound" /> −1 to Wound</label>
-        <label class="check-label"><input type="checkbox" id="devastatingWounds" /> Devastating Wounds <span class="tip" data-tip="Critical wounds (6+) skip saves and deal mortal wounds equal to damage">?</span></label>
-        <label class="check-label"><input type="checkbox" id="antiInfantry" /> Anti-Infantry 4+ <span class="tip" data-tip="Critical wounds on 4+ vs Infantry keyword">?</span></label>
+        <label class="check-label"><input type="checkbox" id="devastatingWounds" /> Devastating Wounds
+          <span class="tip" data-tip="Critical Wounds bypass saves and deal mortal wounds equal to the weapon's Damage characteristic">?</span>
+        </label>
+        <label class="check-label"><input type="checkbox" id="antiInfantry" /> Anti-Infantry 4+
+          <span class="tip" data-tip="Critical Wounds on 4+ vs targets with the Infantry keyword">?</span>
+        </label>
       </div>
 
       <div class="sdivider">Weapon Damage</div>
-
       <div class="field">
         <div class="field-row">
-          <div>
-            <label>AP</label>
+          <div><label>AP</label>
             <select id="ap">
               <option value="0">AP 0</option>
               <option value="1">AP -1</option>
@@ -521,8 +296,7 @@
               <option value="6">AP -6</option>
             </select>
           </div>
-          <div>
-            <label>Damage</label>
+          <div><label>Damage Type</label>
             <select id="damageType">
               <option value="fixed">Fixed</option>
               <option value="d3">D3 (avg 2)</option>
@@ -539,12 +313,16 @@
       <div class="field">
         <input type="number" id="damageFixed" value="1" min="1" max="100" placeholder="Fixed damage value" />
       </div>
-
       <div class="check-grid">
-        <label class="check-label"><input type="checkbox" id="melta" /> Melta (half range) <span class="tip" data-tip="Adds D6 extra damage when within half range">?</span></label>
-        <label class="check-label"><input type="checkbox" id="blast" /> Blast <span class="tip" data-tip="Minimum 3 attacks vs 6+ model units, minimum 6 attacks vs 11+ model units">?</span></label>
-        <label class="check-label"><input type="checkbox" id="heavyWeapon" /> Heavy (+1 hit if stationary) <span class="tip" data-tip="Grants +1 to hit if unit didn't move">?</span></label>
-        <label class="check-label"><input type="checkbox" id="hazardous" /> Hazardous <span class="tip" data-tip="Roll 1 on to-hit: attacking model suffers 1 mortal wound">?</span></label>
+        <label class="check-label"><input type="checkbox" id="melta" /> Melta (half range)
+          <span class="tip" data-tip="Adds D6 bonus damage within half range (avg +3.5)">?</span>
+        </label>
+        <label class="check-label"><input type="checkbox" id="blast" /> Blast
+          <span class="tip" data-tip="Min 3 attacks vs 6+ model units; min 6 vs 11+ model units">?</span>
+        </label>
+        <label class="check-label"><input type="checkbox" id="hazardous" /> Hazardous
+          <span class="tip" data-tip="Each unmodified hit roll of 1 deals 1 mortal wound to the attacking unit">?</span>
+        </label>
       </div>
     </div>
 
@@ -553,26 +331,22 @@
       <div class="panel-title">🛡 Defender Profile</div>
 
       <div class="field">
-        <label>Number of Defending Models <span class="tip" data-tip="Used for Blast keyword and overkill calculations">?</span></label>
+        <label>Number of Defending Models</label>
         <input type="number" id="defModels" value="10" min="1" max="500" />
       </div>
-
       <div class="field">
         <label>Toughness</label>
         <input type="number" id="toughness" value="4" min="1" max="30" />
       </div>
-
       <div class="field">
         <label>Wounds per Model</label>
         <input type="number" id="wounds" value="1" min="1" max="30" />
       </div>
 
       <div class="sdivider">Save</div>
-
       <div class="field">
         <div class="field-row">
-          <div>
-            <label>Armour Save</label>
+          <div><label>Armour Save</label>
             <select id="armourSave">
               <option value="2">2+</option>
               <option value="3">3+</option>
@@ -582,8 +356,7 @@
               <option value="7">No Save</option>
             </select>
           </div>
-          <div>
-            <label>Invulnerable Save</label>
+          <div><label>Invulnerable Save</label>
             <select id="invulnSave">
               <option value="0" selected>None</option>
               <option value="3">3++</option>
@@ -594,9 +367,8 @@
           </div>
         </div>
       </div>
-
       <div class="field">
-        <label>Feel No Pain <span class="tip" data-tip="After-save roll to negate each wound">?</span></label>
+        <label>Feel No Pain</label>
         <select id="fnp">
           <option value="0" selected>None</option>
           <option value="4">4+++ (50%)</option>
@@ -606,20 +378,26 @@
       </div>
 
       <div class="sdivider">Special Abilities</div>
-
       <div class="check-grid">
-        <label class="check-label"><input type="checkbox" id="coverSave" /> In Cover (+1 save) <span class="tip" data-tip="+1 to armour save (not invuln)">?</span></label>
-        <label class="check-label"><input type="checkbox" id="transhuman" /> Transhuman <span class="tip" data-tip="Wounds only on 4+ regardless of Strength comparison">?</span></label>
-        <label class="check-label"><input type="checkbox" id="stealth" /> Stealth (−1 hit) <span class="tip" data-tip="-1 to all incoming hit rolls">?</span></label>
-        <label class="check-label"><input type="checkbox" id="smokeLaunchers" /> Smoke (−1 hit) <span class="tip" data-tip="-1 to hit rolls from ranged weapons">?</span></label>
-        <label class="check-label"><input type="checkbox" id="strikeFirst" /> Strike First <span class="tip" data-tip="Fights before normal initiative — informational only">?</span></label>
-        <label class="check-label"><input type="checkbox" id="strikeLastDef" /> Strike Last <span class="tip" data-tip="Fights after normal initiative — informational only">?</span></label>
+        <label class="check-label"><input type="checkbox" id="coverSave" /> In Cover (+1 save)
+          <span class="tip" data-tip="+1 to armour save characteristic (not invulnerable)">?</span>
+        </label>
+        <label class="check-label"><input type="checkbox" id="stealth" /> Stealth (−1 hit)
+          <span class="tip" data-tip="−1 to all incoming hit rolls">?</span>
+        </label>
+        <label class="check-label"><input type="checkbox" id="smokeLaunchers" /> Smoke (−1 hit)</label>
+        <label class="check-label"><input type="checkbox" id="targetInfantry" /> Infantry keyword
+          <span class="tip" data-tip="Required for Anti-Infantry weapons to trigger critical wounds on 4+">?</span>
+        </label>
+        <label class="check-label"><input type="checkbox" id="targetMonster" /> Monster / Vehicle</label>
+        <label class="check-label"><input type="checkbox" id="woundModMinus1" /> −1 to Wound (ability)
+          <span class="tip" data-tip="Defensive ability that worsens incoming wound rolls by 1">?</span>
+        </label>
       </div>
 
       <div class="sdivider">Mortal Wound Resistance</div>
-
       <div class="field">
-        <label>Mortal Wound Negation <span class="tip" data-tip="Some units ignore mortal wounds on a set roll">?</span></label>
+        <label>Mortal Wound Negation</label>
         <select id="mwNegate">
           <option value="0" selected>None</option>
           <option value="4">4+ (negate 50%)</option>
@@ -627,392 +405,431 @@
           <option value="6">6+ (negate 17%)</option>
         </select>
       </div>
-
-      <div class="sdivider">Daemon / Faction Keywords</div>
-
-      <div class="check-grid">
-        <label class="check-label"><input type="checkbox" id="targetInfantry" /> Infantry <span class="tip" data-tip="Relevant for Anti-Infantry keyword weapons">?</span></label>
-        <label class="check-label"><input type="checkbox" id="targetMonster" /> Monster / Vehicle</label>
-        <label class="check-label"><input type="checkbox" id="targetFly" /> Fly</label>
-        <label class="check-label"><input type="checkbox" id="targetCharacter" /> Character</label>
-      </div>
-
     </div>
   </div><!-- /columns -->
 
-  <!-- ── ERROR ── -->
-  <div class="error-msg" id="errorMsg"></div>
-
-  <!-- ── BUTTON ── -->
   <button class="calc-btn" onclick="calculate()">⚔ CALCULATE AVERAGE DAMAGE ⚔</button>
 
-  <!-- ── RESULTS ── -->
+  <!-- RESULTS -->
   <div id="results">
     <div class="results-panel">
       <div class="results-title">☠ Combat Resolution — Average Outcome</div>
-
       <div class="stat-grid">
-        <div class="stat-box">
-          <div class="stat-value" id="r-attacks">–</div>
-          <div class="stat-label">Total Attacks</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-value" id="r-hits">–</div>
-          <div class="stat-label">Avg Hits</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-value" id="r-wounds">–</div>
-          <div class="stat-label">Avg Wounds</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-value" id="r-unsaved">–</div>
-          <div class="stat-label">Unsaved Wounds</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-value" id="r-dmg">–</div>
-          <div class="stat-label">Avg Damage</div>
-        </div>
-        <div class="stat-box featured">
-          <div class="stat-value" id="r-models">–</div>
-          <div class="stat-label">Models Slain</div>
-        </div>
+        <div class="stat-box"><div class="stat-value" id="r-attacks">–</div><div class="stat-label">Total Attacks</div></div>
+        <div class="stat-box"><div class="stat-value" id="r-hits">–</div><div class="stat-label">Avg Hits</div></div>
+        <div class="stat-box"><div class="stat-value" id="r-wounds">–</div><div class="stat-label">Avg Wounds</div></div>
+        <div class="stat-box"><div class="stat-value" id="r-unsaved">–</div><div class="stat-label">Unsaved Wounds</div></div>
+        <div class="stat-box"><div class="stat-value" id="r-dmg">–</div><div class="stat-label">Avg Damage</div></div>
+        <div class="stat-box featured"><div class="stat-value" id="r-models">–</div><div class="stat-label">Models Slain</div></div>
       </div>
-
-      <!-- flow pipeline -->
       <div class="flow" id="flow-row"></div>
-
-      <!-- probability breakdown -->
       <div class="breakdown">
         <div class="breakdown-title">Step-by-step Probability Breakdown</div>
         <div id="breakdown-rows"></div>
       </div>
-
     </div>
-  </div><!-- /results -->
+  </div>
 
   <p class="footnote">
-    Built for Warhammer 40,000 10th Edition rules &nbsp;·&nbsp;
-    All values are <em>averages</em> — dice are fickle &nbsp;·&nbsp;
+    Data sourced from <a href="https://wahapedia.ru" target="_blank">Wahapedia</a> · Not affiliated with Games Workshop ·
+    Warhammer 40,000 10th Edition · All results are <em>statistical averages</em> ·
     <a href="https://github.com/" target="_blank">View on GitHub</a>
   </p>
-
-</div><!-- /app -->
+</div>
 
 <script>
-// ──────────────────────────────────────────────────
-//  UTILITY
-// ──────────────────────────────────────────────────
-function diceAvg(type) {
-  const map = {
-    fixed:  null,
-    d3:     2,
-    d6:     3.5,
-    '2d3':  4,
-    '2d6':  7,
-    'd3+1': 3,
-    'd3+3': 5,
-    'd6+1': 4.5,
-    'd6+2': 5.5,
-    'd6+3': 6.5,
-  };
-  return map[type] !== undefined ? map[type] : null;
+// ═══════════════════════════════════════════════════════════
+//  WAHAPEDIA DATA LAYER
+//  Fetches CSV files via a public CORS proxy.
+//  Falls back silently if offline — manual input still works.
+// ═══════════════════════════════════════════════════════════
+const PROXY = 'https://corsproxy.io/?url=';
+const BASE  = 'https://wahapedia.ru/wh40k10ed/';
+
+let DB = { datasheets:[], models:[], weapons:[], factions:[] };
+let dbState = 'idle'; // idle | loading | loaded | failed
+
+function parseCSV(raw) {
+  const lines = raw.trim().split('\n');
+  const headers = lines[0].replace(/^\uFEFF/,'').split('|').map(h=>h.trim());
+  return lines.slice(1).map(line => {
+    const vals = line.split('|');
+    const obj = {};
+    headers.forEach((h,i) => obj[h] = (vals[i]||'').trim());
+    return obj;
+  }).filter(r => Object.values(r).some(v=>v));
 }
 
-function fmt(n) {
-  if (n === null || n === undefined || isNaN(n)) return '–';
-  return n % 1 === 0 ? n.toFixed(0) : n.toFixed(2);
+async function fetchCSV(url) {
+  const r = await fetch(PROXY + encodeURIComponent(url), {cache:'force-cache'});
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return parseCSV(await r.text());
 }
 
-function pct(p) { return (p * 100).toFixed(1) + '%'; }
-
-function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
-
-// ──────────────────────────────────────────────────
-//  CORE MATHS
-// ──────────────────────────────────────────────────
-function hitChance(skill, mods) {
-  // torrent = auto-hit
-  if (mods.torrent) return 1.0;
-
-  let eff = skill;
-  let delta = 0;
-  if (mods.plusOneHit)   delta--;
-  if (mods.minusOneHit)  delta++;
-  if (mods.stealth)      delta++;
-  if (mods.smokeLaunchers) delta++;
-  if (mods.heavyWeapon)  delta--;   // +1 to hit if stationary
-  eff = clamp(eff + delta, 2, 6);
-
-  const base = (7 - eff) / 6;
-  let chance = base;
-
-  if (mods.rerollHitAll) {
-    chance = base + (1 - base) * base;
-  } else if (mods.rerollHit1) {
-    chance = base + (1/6) * base;
+async function loadDB() {
+  if (dbState === 'loaded' || dbState === 'loading') return;
+  dbState = 'loading';
+  setStatus('atkStatus','⏳ Loading Wahapedia data…','load');
+  try {
+    const [ds, models, weapons, factions] = await Promise.all([
+      fetchCSV(BASE+'Datasheets.csv'),
+      fetchCSV(BASE+'Datasheets_models.csv'),
+      fetchCSV(BASE+'Datasheets_weapons.csv'),
+      fetchCSV(BASE+'Factions.csv'),
+    ]);
+    DB = { datasheets:ds, models, weapons, factions };
+    dbState = 'loaded';
+    setStatus('atkStatus','✓ Wahapedia data loaded — search any unit above','ok');
+    setTimeout(()=>setStatus('atkStatus','',''),4000);
+  } catch(e) {
+    dbState = 'failed';
+    setStatus('atkStatus','⚠ Could not load live data (CORS / network). Enter stats manually.','err');
   }
-  return clamp(chance, 0, 1);
 }
 
-function woundChance(str, tough, mods, transhumanActive) {
-  let threshold;
-  if (transhumanActive) {
-    threshold = 4; // wounds only on 4+
-  } else if (str >= tough * 2) {
-    threshold = 2;
-  } else if (str > tough) {
-    threshold = 3;
-  } else if (str === tough) {
-    threshold = 4;
-  } else if (str * 2 <= tough) {
-    threshold = 6;
-  } else {
-    threshold = 5;
+// ─── Search helpers ───────────────────────────────────────
+function getFaction(id) {
+  const f = DB.factions.find(r => r.id === id);
+  return f ? f.name : (id||'');
+}
+
+function searchUnits(q) {
+  const lo = q.toLowerCase();
+  return DB.datasheets.filter(r => r.name && r.name.toLowerCase().includes(lo)).slice(0,25);
+}
+
+function getModels(dsId)  { return DB.models.filter(r=>r.datasheet_id===dsId); }
+function getWeapons(dsId) { return DB.weapons.filter(r=>r.datasheet_id===dsId); }
+
+// ─── State ───────────────────────────────────────────────
+let atkWeapons = [];
+
+// ─── UI helpers ──────────────────────────────────────────
+function setStatus(id,msg,cls) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'search-status' + (cls ? ' '+cls : '');
+}
+
+function onSearchFocus(side) {
+  if (dbState === 'idle') loadDB();
+  const q = document.getElementById(side+'Search').value.trim();
+  if (q.length >= 2 && dbState === 'loaded') renderDrop(side, searchUnits(q));
+}
+
+function onSearchInput(side) {
+  if (dbState === 'idle') { loadDB(); return; }
+  if (dbState !== 'loaded') return;
+  const q = document.getElementById(side+'Search').value.trim();
+  if (q.length < 2) { closeDrop(side); return; }
+  renderDrop(side, searchUnits(q));
+}
+
+function renderDrop(side, units) {
+  const drop = document.getElementById(side+'Drop');
+  if (!units.length) { closeDrop(side); return; }
+  drop.innerHTML = units.map(u =>
+    `<div class="sdrop-item" onmousedown="selectUnit('${side}','${u.id}','${u.name.replace(/'/g,'&#39;')}')">
+      ${u.name}
+      <span class="sdrop-faction">${getFaction(u.faction_id)}</span>
+    </div>`
+  ).join('');
+  drop.classList.add('open');
+}
+
+function closeDrop(side) {
+  document.getElementById(side+'Drop').classList.remove('open');
+}
+
+function selectUnit(side, dsId, name) {
+  closeDrop(side);
+  document.getElementById(side+'Search').value = name;
+  if (side === 'atk') applyAttacker(dsId, name);
+  else                applyDefender(dsId, name);
+}
+
+// ─── Apply attacker unit ──────────────────────────────────
+function applyAttacker(dsId, name) {
+  atkWeapons = getWeapons(dsId);
+  if (!atkWeapons.length) {
+    setStatus('atkStatus','✓ '+name+' loaded — no weapon data, set stats manually','ok');
+    document.getElementById('weaponWrap').style.display = 'none';
+    return;
   }
+  const picker = document.getElementById('weaponPicker');
+  picker.innerHTML = atkWeapons.map((w,i)=>{
+    const label = `${w.name} [A:${w.A||'?'} S:${w.S||'?'} AP:${w.AP||'0'} D:${w.D||'?'}]`;
+    return `<option value="${i}">${label}</option>`;
+  }).join('');
+  document.getElementById('weaponWrap').style.display = 'block';
+  applyWeapon();
+  setStatus('atkStatus','✓ '+name+' — pick a weapon above','ok');
+}
 
-  let eff = threshold;
-  if (mods.plusOneWound)  eff = Math.max(2, eff - 1);
-  if (mods.minusOneWound) eff = Math.min(6, eff + 1);
+function applyWeapon() {
+  const i = parseInt(document.getElementById('weaponPicker').value);
+  const w = atkWeapons[i];
+  if (!w) return;
 
-  const base = (7 - eff) / 6;
-  let chance = base;
+  setDicePair('attacksType','attacksFixed', w.A||'1');
+  setSkillSel(w.type === 'Melee' ? w.WS : w.BS);
+  const s = parseInt(w.S); if (!isNaN(s)) document.getElementById('strength').value = s;
+  selByVal('ap', Math.abs(parseInt(w.AP)||0));
+  setDicePair('damageType','damageFixed', w.D||'1');
 
-  if (mods.rerollWoundAll || mods.twinLinked) {
-    chance = mods.rerollWoundAll
-      ? base + (1 - base) * base
-      : base + (1/6) * base;
-  } else if (mods.rerollWound1) {
-    chance = base + (1/6) * base;
-  }
-  return clamp(chance, 0, 1);
+  const kw = ((w.abilities||'')+' '+(w.keywords||'')).toUpperCase();
+  setChk('torrent',           kw.includes('TORRENT'));
+  setChk('lethalHits',        kw.includes('LETHAL HITS'));
+  setChk('sustainedHits1',    kw.includes('SUSTAINED HITS 1'));
+  setChk('sustainedHits2',    kw.includes('SUSTAINED HITS 2'));
+  setChk('devastatingWounds', kw.includes('DEVASTATING WOUNDS'));
+  setChk('blast',             kw.includes('BLAST'));
+  setChk('hazardous',         kw.includes('HAZARDOUS'));
+  setChk('melta',             kw.includes('MELTA'));
+  setChk('twinLinked',        kw.includes('TWIN-LINKED'));
+}
+
+// ─── Apply defender unit ──────────────────────────────────
+function applyDefender(dsId, name) {
+  const rows = getModels(dsId);
+  if (!rows.length) { setStatus('defStatus','✓ '+name+' — no model data found','ok'); return; }
+  const m = rows[0];
+  const t = parseInt(m.T),  w = parseInt(m.W),  sv = parseInt(m.Sv);
+  if (!isNaN(t)) document.getElementById('toughness').value = t;
+  if (!isNaN(w)) document.getElementById('wounds').value = w;
+  if (!isNaN(sv)) selByVal('armourSave', sv);
+  const inv = parseInt(m.inv_sv);
+  selByVal('invulnSave', (!isNaN(inv) && inv > 0) ? inv : 0);
+  const svDisp = isNaN(sv) ? '?' : sv+'+';
+  setStatus('defStatus',`✓ ${name} (T${isNaN(t)?'?':t} W${isNaN(w)?'?':w} Sv${svDisp})`,'ok');
+}
+
+// ─── Select / field helpers ───────────────────────────────
+function selByVal(id, val) {
+  const el = document.getElementById(id);
+  const o = [...el.options].find(o=>parseInt(o.value)===parseInt(val));
+  if (o) el.value = o.value;
+}
+function setChk(id, val) { document.getElementById(id).checked = !!val; }
+function setSkillSel(raw) {
+  const n = parseInt(raw); if (!isNaN(n) && n>=2 && n<=6) selByVal('skill',n);
+}
+const DMAP = {'D3':'d3','D6':'d6','2D3':'2d3','2D6':'2d6','D3+1':'d3+1','D6+1':'d6+1','D6+2':'d6+2'};
+function setDicePair(typeId, fixedId, raw) {
+  const u = String(raw).trim().toUpperCase();
+  const key = Object.keys(DMAP).find(k=>u===k||u.startsWith(k+'+'));
+  if (key) { selByVal(typeId, DMAP[key]); }
+  else if (/D\d/.test(u)) { selByVal(typeId,'d6'); } // fallback
+  else { selByVal(typeId,'fixed'); const n=parseInt(raw); if(!isNaN(n)) document.getElementById(fixedId).value=n; }
+}
+
+// Close dropdowns on outside click
+document.addEventListener('click', e => {
+  ['atk','def'].forEach(side => {
+    const inp = document.getElementById(side+'Search');
+    if (inp && !inp.closest('.search-input-wrap').contains(e.target)) closeDrop(side);
+  });
+});
+
+window.addEventListener('DOMContentLoaded', loadDB);
+
+// ═══════════════════════════════════════════════════════════
+//  COMBAT MATHS
+// ═══════════════════════════════════════════════════════════
+const DICE_AVG = {fixed:null,d3:2,d6:3.5,'2d3':4,'2d6':7,'d3+1':3,'d3+3':5,'d6+1':4.5,'d6+2':5.5,'d6+3':6.5};
+const fmt  = n  => (n===null||n===undefined||isNaN(n)) ? '–' : (n%1===0 ? n.toFixed(0) : n.toFixed(2));
+const pct  = p  => (p*100).toFixed(1)+'%';
+const clmp = (v,lo,hi) => Math.min(hi,Math.max(lo,v));
+
+function hitChance(skill, m) {
+  if (m.torrent) return 1;
+  let d = 0;
+  if (m.plusOneHit)     d--;
+  if (m.minusOneHit)    d++;
+  if (m.stealth)        d++;
+  if (m.smokeLaunchers) d++;
+  if (m.heavyWeapon)    d--;
+  const eff  = clmp(skill+d, 2, 6);
+  const base = (7-eff)/6;
+  if (m.rerollHitAll)  return clmp(base+(1-base)*base, 0, 1);
+  if (m.rerollHit1)    return clmp(base+(1/6)*base, 0, 1);
+  return clmp(base, 0, 1);
+}
+
+function woundChance(str, tough, m) {
+  let thr;
+  if (str>=tough*2) thr=2;
+  else if (str>tough) thr=3;
+  else if (str===tough) thr=4;
+  else if (str*2<=tough) thr=6;
+  else thr=5;
+  let eff = thr;
+  if (m.plusOneWound)    eff=Math.max(2,eff-1);
+  if (m.minusOneWound)   eff=Math.min(6,eff+1);
+  if (m.woundModMinus1)  eff=Math.min(6,eff+1);
+  const base = (7-eff)/6;
+  if (m.rerollWoundAll||m.twinLinked) return clmp(m.rerollWoundAll ? base+(1-base)*base : base+(1/6)*base, 0, 1);
+  if (m.rerollWound1) return clmp(base+(1/6)*base, 0, 1);
+  return clmp(base, 0, 1);
 }
 
 function saveChance(armour, ap, invuln, cover) {
-  let effArmour = armour + ap;  // AP increases threshold
-  if (cover) effArmour = Math.max(2, effArmour - 1);  // cover helps
-
-  // use best save (invuln not modified by AP)
-  let saveThreshold = effArmour;
-  if (invuln > 0 && invuln < effArmour) saveThreshold = invuln;
-  if (saveThreshold > 6) return 0; // no save
-  return clamp((7 - saveThreshold) / 6, 0, 1);
+  let eff = armour + ap;
+  if (cover) eff = Math.max(2, eff-1);
+  if (invuln > 0 && invuln < eff) eff = invuln;
+  return eff > 6 ? 0 : clmp((7-eff)/6, 0, 1);
 }
 
-function fnpChance(fnpVal) {
-  if (!fnpVal || fnpVal === 0) return 0;
-  return clamp((7 - fnpVal) / 6, 0, 1);
-}
-
-// ──────────────────────────────────────────────────
-//  MAIN CALCULATE
-// ──────────────────────────────────────────────────
 function calculate() {
-  const err = document.getElementById('errorMsg');
-  err.style.display = 'none';
+  const g = id => document.getElementById(id);
+  const numModels      = parseInt(g('numModels').value)||1;
+  const attacksType    = g('attacksType').value;
+  const attacksFixed   = parseFloat(g('attacksFixed').value)||1;
+  const skill          = parseInt(g('skill').value);
+  const strength       = parseInt(g('strength').value);
+  const ap             = parseInt(g('ap').value);
+  const damageType     = g('damageType').value;
+  const damageFixed    = parseFloat(g('damageFixed').value)||1;
+  const toughness      = parseInt(g('toughness').value);
+  const wpModel        = parseInt(g('wounds').value);
+  const armourSave     = parseInt(g('armourSave').value);
+  const invulnSave     = parseInt(g('invulnSave').value);
+  const fnpVal         = parseInt(g('fnp').value);
+  const defModels      = parseInt(g('defModels').value)||1;
+  const mwNegateVal    = parseInt(g('mwNegate').value);
 
-  // ── READ INPUTS ──
-  const numModels   = parseInt(document.getElementById('numModels').value) || 1;
-  const attacksType = document.getElementById('attacksType').value;
-  const attacksFixed= parseFloat(document.getElementById('attacksFixed').value) || 1;
-  const skill       = parseInt(document.getElementById('skill').value);
-  const strength    = parseInt(document.getElementById('strength').value);
-  const ap          = parseInt(document.getElementById('ap').value);
-  const damageType  = document.getElementById('damageType').value;
-  const damageFixed = parseFloat(document.getElementById('damageFixed').value) || 1;
-  const toughness   = parseInt(document.getElementById('toughness').value);
-  const wounds      = parseInt(document.getElementById('wounds').value);
-  const armourSave  = parseInt(document.getElementById('armourSave').value);
-  const invulnSave  = parseInt(document.getElementById('invulnSave').value);
-  const fnpVal      = parseInt(document.getElementById('fnp').value);
-  const defModels   = parseInt(document.getElementById('defModels').value) || 1;
-
-  // attacker mods
-  const mods = {
-    rerollHit1:       document.getElementById('rerollHit1').checked,
-    rerollHitAll:     document.getElementById('rerollHitAll').checked,
-    plusOneHit:       document.getElementById('plusOneHit').checked,
-    minusOneHit:      document.getElementById('minusOneHit').checked,
-    sustainedHits1:   document.getElementById('sustainedHits1').checked,
-    lethalHits:       document.getElementById('lethalHits').checked,
-    torrent:          document.getElementById('torrent').checked,
-    twinLinked:       document.getElementById('twinLinked').checked,
-    rerollWound1:     document.getElementById('rerollWound1').checked,
-    rerollWoundAll:   document.getElementById('rerollWoundAll').checked,
-    plusOneWound:     document.getElementById('plusOneWound').checked,
-    minusOneWound:    document.getElementById('minusOneWound').checked,
-    devastatingWounds:document.getElementById('devastatingWounds').checked,
-    antiInfantry:     document.getElementById('antiInfantry').checked,
-    melta:            document.getElementById('melta').checked,
-    blast:            document.getElementById('blast').checked,
-    heavyWeapon:      document.getElementById('heavyWeapon').checked,
-    hazardous:        document.getElementById('hazardous').checked,
-    // defender
-    coverSave:        document.getElementById('coverSave').checked,
-    transhuman:       document.getElementById('transhuman').checked,
-    stealth:          document.getElementById('stealth').checked,
-    smokeLaunchers:   document.getElementById('smokeLaunchers').checked,
-    targetInfantry:   document.getElementById('targetInfantry').checked,
+  const m = {
+    rerollHit1:g('rerollHit1').checked, rerollHitAll:g('rerollHitAll').checked,
+    plusOneHit:g('plusOneHit').checked,  minusOneHit:g('minusOneHit').checked,
+    critOn5:g('critOn5').checked,
+    sustainedHits1:g('sustainedHits1').checked, sustainedHits2:g('sustainedHits2').checked,
+    lethalHits:g('lethalHits').checked, torrent:g('torrent').checked,
+    twinLinked:g('twinLinked').checked,  heavyWeapon:g('heavyWeapon').checked,
+    rerollWound1:g('rerollWound1').checked, rerollWoundAll:g('rerollWoundAll').checked,
+    plusOneWound:g('plusOneWound').checked,  minusOneWound:g('minusOneWound').checked,
+    devastatingWounds:g('devastatingWounds').checked, antiInfantry:g('antiInfantry').checked,
+    melta:g('melta').checked, blast:g('blast').checked, hazardous:g('hazardous').checked,
+    coverSave:g('coverSave').checked, stealth:g('stealth').checked,
+    smokeLaunchers:g('smokeLaunchers').checked, targetInfantry:g('targetInfantry').checked,
+    woundModMinus1:g('woundModMinus1').checked,
   };
 
-  // ── ATTACKS ──
-  let attacksPerModel = diceAvg(attacksType) ?? attacksFixed;
-  let totalAttacks = numModels * attacksPerModel;
+  // Crit threshold
+  const critFrac = m.critOn5 ? 2/6 : 1/6;
 
-  // Blast rule
-  if (mods.blast) {
-    if (defModels >= 11) totalAttacks = Math.max(totalAttacks, numModels * 6);
-    else if (defModels >= 6) totalAttacks = Math.max(totalAttacks, numModels * 3);
+  // Attacks
+  let atkPerModel = DICE_AVG[attacksType] ?? attacksFixed;
+  let totalAtk = numModels * atkPerModel;
+  if (m.blast) {
+    if (defModels >= 11) totalAtk = Math.max(totalAtk, numModels * 6);
+    else if (defModels >= 6) totalAtk = Math.max(totalAtk, numModels * 3);
   }
 
-  // ── TO HIT ──
-  const pHit = hitChance(skill, mods);
-
-  // Sustained Hits 1: critical hits (nat 6) generate +1 hit
-  // Fraction of attacks that crit = 1/6 (assuming no modifiers affect crit threshold)
-  const critFrac = 1/6;
-  let avgHits = totalAttacks * pHit;
-  if (mods.sustainedHits1 && !mods.torrent) {
-    avgHits += totalAttacks * critFrac * 1; // +1 hit per crit
+  // To Hit
+  const pH = hitChance(skill, m);
+  let avgHits = totalAtk * pH;
+  if (!m.torrent) {
+    const bonus = m.sustainedHits2 ? 2 : m.sustainedHits1 ? 1 : 0;
+    if (bonus) avgHits += totalAtk * critFrac * bonus;
   }
 
-  // Lethal Hits: crits auto-wound (bypass wound roll)
-  const lethalAutoWounds = mods.lethalHits ? totalAttacks * critFrac : 0;
-  const normalHitsForWound = avgHits - lethalAutoWounds;
+  // Lethal Hits
+  const lethalAW        = m.lethalHits ? totalAtk * critFrac : 0;
+  const normalHitsWound = avgHits - lethalAW;
 
-  // ── TO WOUND ──
-  const pWound = woundChance(strength, toughness, mods, mods.transhuman);
+  // To Wound
+  const pW = woundChance(strength, toughness, m);
+  let avgWounds = normalHitsWound * pW + lethalAW;
 
-  // Anti-Infantry: crits on 4+ vs Infantry
-  let avgWoundsFromNormal = normalHitsForWound * pWound;
-  let avgWoundsTotal = avgWoundsFromNormal + lethalAutoWounds;
-
-  // Devastating Wounds: crits on wound roll (6+) become mortal wounds that bypass saves
-  const woundCritFrac = 1/6;
-  let devastatingMortals = 0;
-  let regularWounds = avgWoundsTotal;
-  if (mods.devastatingWounds) {
-    // Crits come from normal hits (lethal-hit crits already handled)
-    const critWounds = normalHitsForWound * pWound * woundCritFrac;
-    devastatingMortals = critWounds; // these skip saves
-    regularWounds = avgWoundsTotal - critWounds;
+  // Anti-Infantry bonus
+  if (m.antiInfantry && m.targetInfantry) {
+    avgWounds += normalHitsWound * (3/6) * 0.25; // rough estimate
   }
 
-  // Anti-Infantry bonus crit wounds (4+ vs infantry)
-  if (mods.antiInfantry && mods.targetInfantry) {
-    const antiCritFrac = 3/6; // 4+ = 3 results
-    const antiExtra = normalHitsForWound * antiCritFrac * 1;
-    avgWoundsTotal += antiExtra * 0.3; // approximate extra crits converted
+  // Devastating Wounds
+  let devastMW = 0, regularW = avgWounds;
+  if (m.devastatingWounds) {
+    devastMW = normalHitsWound * pW * critFrac;
+    regularW = avgWounds - devastMW;
   }
 
-  // ── SAVES ──
-  const pSave = saveChance(armourSave, ap, invulnSave, mods.coverSave);
-  const pFnp  = fnpChance(fnpVal);
+  // Saves & FNP
+  const pSave = saveChance(armourSave, ap, invulnSave, m.coverSave);
+  const pFnp  = fnpVal ? clmp((7-fnpVal)/6, 0, 1) : 0;
+  const afterFnpReg = regularW * (1-pSave) * (1-pFnp);
 
-  const unsavedFromRegular = regularWounds * (1 - pSave);
-  // FNP applied after saves
-  const afterFnpRegular = unsavedFromRegular * (1 - pFnp);
+  const mwFrac   = mwNegateVal ? (7-mwNegateVal)/6 : 1;
+  const effMortals = devastMW * mwFrac * (1-pFnp);
+  const totalUnsaved = afterFnpReg + effMortals;
 
-  // Mortal wound resistance
-  const mwNegateVal = parseInt(document.getElementById('mwNegate').value);
-  const mwNegateFrac = mwNegateVal > 0 ? (7 - mwNegateVal) / 6 : 1;
-  const effectiveMortals = devastatingMortals * mwNegateFrac * (1 - pFnp);
+  // Damage
+  let dpw = DICE_AVG[damageType] ?? damageFixed;
+  if (m.melta) dpw += 3.5;
+  const totalDmg = totalUnsaved * dpw;
+  const slain    = Math.min(defModels, totalDmg / wpModel);
+  const hazMW    = m.hazardous ? totalAtk * (1/6) : 0;
 
-  const totalUnsaved = afterFnpRegular + effectiveMortals;
+  // ── Render ──
+  g('r-attacks').textContent = fmt(totalAtk);
+  g('r-hits').textContent    = fmt(avgHits);
+  g('r-wounds').textContent  = fmt(avgWounds);
+  g('r-unsaved').textContent = fmt(totalUnsaved);
+  g('r-dmg').textContent     = fmt(totalDmg);
+  g('r-models').textContent  = fmt(slain);
 
-  // ── DAMAGE ──
-  let damagePerWound = diceAvg(damageType) ?? damageFixed;
-  if (mods.melta) damagePerWound += 3.5; // +D6 melta bonus (avg 3.5)
-
-  // Devastating wounds deal damage = weapon damage as mortal wounds
-  const damageFromMortals = effectiveMortals * damagePerWound;
-  const damageFromRegular = afterFnpRegular * damagePerWound;
-  const totalDamage = damageFromRegular + damageFromMortals;
-
-  // ── MODELS SLAIN ──
-  // Rough: total damage / wounds per model (overkill simplified)
-  const modelsSlain = Math.min(defModels, totalDamage / wounds);
-
-  // ── HAZARDOUS ──
-  let hazardousMortals = 0;
-  if (mods.hazardous) {
-    hazardousMortals = totalAttacks * (1/6); // 1 mortal per roll of 1
-  }
-
-  // ── RENDER ──
-  document.getElementById('r-attacks').textContent = fmt(totalAttacks);
-  document.getElementById('r-hits').textContent    = fmt(avgHits);
-  document.getElementById('r-wounds').textContent  = fmt(avgWoundsTotal);
-  document.getElementById('r-unsaved').textContent = fmt(totalUnsaved);
-  document.getElementById('r-dmg').textContent     = fmt(totalDamage);
-  document.getElementById('r-models').textContent  = fmt(modelsSlain);
-
-  // flow
-  const flow = document.getElementById('flow-row');
-  flow.innerHTML = [
-    { v: fmt(totalAttacks), l: 'Attacks' },
-    { v: '×' + pct(pHit), l: 'Hit Chance', arrow: true },
-    { v: fmt(avgHits), l: 'Hits' },
-    { v: '×' + pct(pWound), l: 'Wound Chance', arrow: true },
-    { v: fmt(avgWoundsTotal), l: 'Wounds' },
-    { v: '×' + pct(1 - pSave), l: 'Fail Save', arrow: true },
-    { v: fmt(totalUnsaved), l: 'Unsaved' },
-    { v: '×' + fmt(damagePerWound), l: 'Dmg/Wound', arrow: true },
-    { v: fmt(totalDamage), l: 'Damage' },
-  ].map(s =>
-    (s.arrow ? '<span class="flow-arrow">›</span>' : '') +
+  // Flow pipeline
+  g('flow-row').innerHTML = [
+    {v:fmt(totalAtk),l:'Attacks'},
+    {v:'×'+pct(pH),l:'Hit Chance',a:1},
+    {v:fmt(avgHits),l:'Hits'},
+    {v:'×'+pct(pW),l:'Wound Chance',a:1},
+    {v:fmt(avgWounds),l:'Wounds'},
+    {v:'×'+pct(1-pSave),l:'Fail Save',a:1},
+    {v:fmt(totalUnsaved),l:'Unsaved'},
+    {v:'×'+fmt(dpw),l:'Dmg/Wound',a:1},
+    {v:fmt(totalDmg),l:'Damage'},
+  ].map(s=>(s.a?'<span class="flow-arrow">›</span>':'')+
     `<div class="flow-step"><span class="flow-val">${s.v}</span><div class="flow-lbl">${s.l}</div></div>`
   ).join('');
 
-  // breakdown
-  function colorClass(p) {
-    if (p >= 0.6) return 'good';
-    if (p >= 0.35) return 'warn';
-    return 'bad';
+  // Wound threshold string
+  function wThr() {
+    let thr;
+    if (strength>=toughness*2) thr=2; else if (strength>toughness) thr=3;
+    else if (strength===toughness) thr=4; else if (strength*2<=toughness) thr=6; else thr=5;
+    let eff=thr;
+    if(m.plusOneWound)eff=Math.max(2,eff-1);
+    if(m.minusOneWound||m.woundModMinus1)eff=Math.min(6,eff+1);
+    return eff+'+';
   }
-  const rows = [
-    { k: 'Effective hit chance',           v: pct(pHit),            cls: colorClass(pHit)    },
-    { k: 'Wound threshold (S vs T)',       v: woundThresholdStr(strength, toughness, mods.transhuman), cls: '' },
-    { k: 'Effective wound chance',         v: pct(pWound),          cls: colorClass(pWound)  },
-    { k: 'Effective armour save',          v: armourSaveStr(armourSave, ap, invulnSave, mods.coverSave), cls: '' },
-    { k: 'Save fail chance',               v: pct(1 - pSave),       cls: colorClass(1 - pSave) },
-    { k: 'Feel No Pain (negation)',        v: fnpVal ? pct(pFnp) : 'None',  cls: '' },
-    { k: 'Avg damage per unsaved wound',   v: fmt(damagePerWound),  cls: '' },
-    { k: 'Devastating mortal wounds',      v: mods.devastatingWounds ? fmt(devastatingMortals) : '0', cls: '' },
-    { k: 'Lethal auto-wounds',             v: mods.lethalHits ? fmt(lethalAutoWounds) : '0',  cls: '' },
-    { k: 'Hazardous self-mortals',         v: mods.hazardous ? fmt(hazardousMortals) : '0',   cls: '' },
-    { k: 'Total damage dealt',             v: fmt(totalDamage),     cls: '' },
-    { k: 'Estimated models slain',         v: fmt(modelsSlain) + ' / ' + defModels, cls: '' },
-  ];
+  function svStr() {
+    let eff=armourSave+ap; if(m.coverSave)eff=Math.max(2,eff-1);
+    if(invulnSave>0&&invulnSave<eff) return invulnSave+'++ (invuln)';
+    return eff>6?'No Save':eff+'+';
+  }
+  function cc(p){ return p>=.6?'good':p>=.35?'warn':'bad'; }
 
-  document.getElementById('breakdown-rows').innerHTML = rows
-    .map(r => `<div class="bd-row"><span class="bd-key">${r.k}</span><span class="bd-val ${r.cls}">${r.v}</span></div>`)
-    .join('');
+  g('breakdown-rows').innerHTML = [
+    {k:'Critical hit threshold',          v:(m.critOn5?'5+':'6+')},
+    {k:'Effective hit chance',            v:pct(pH),    cls:cc(pH)},
+    {k:'Wound threshold (S'+strength+' vs T'+toughness+')', v:wThr()},
+    {k:'Effective wound chance',          v:pct(pW),    cls:cc(pW)},
+    {k:'Effective save used',             v:svStr()},
+    {k:'Save fail chance',                v:pct(1-pSave),cls:cc(1-pSave)},
+    {k:'Feel No Pain negation',           v:fnpVal?pct(pFnp):'None'},
+    {k:'Avg damage per unsaved wound',    v:fmt(dpw)},
+    {k:'Devastating mortal wounds',       v:m.devastatingWounds?fmt(devastMW):'0'},
+    {k:'Lethal Hit auto-wounds',          v:m.lethalHits?fmt(lethalAW):'0'},
+    {k:'Hazardous self-mortals (attacker)',v:m.hazardous?fmt(hazMW):'0'},
+    {k:'Total damage dealt',              v:fmt(totalDmg)},
+    {k:'Estimated models slain',          v:fmt(slain)+' / '+defModels},
+  ].map(r=>`<div class="bd-row"><span class="bd-key">${r.k}</span><span class="bd-val ${r.cls||''}">${r.v}</span></div>`).join('');
 
-  document.getElementById('results').style.display = 'block';
-  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  g('results').style.display = 'block';
+  g('results').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function woundThresholdStr(str, tough, transhuman) {
-  if (transhuman) return '4+ (Transhuman)';
-  if (str >= tough * 2) return '2+';
-  if (str > tough)      return '3+';
-  if (str === tough)    return '4+';
-  if (str * 2 <= tough) return '6+';
-  return '5+';
-}
-
-function armourSaveStr(armour, ap, invuln, cover) {
-  let eff = armour + ap;
-  if (cover) eff = Math.max(2, eff - 1);
-  let saveStr = eff > 6 ? 'None' : eff + '+';
-  if (invuln > 0 && invuln < eff) saveStr = invuln + '++ (invuln used)';
-  return saveStr;
-}
-
-// allow Enter to calculate
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') calculate();
-});
+document.addEventListener('keydown', e => { if (e.key==='Enter') calculate(); });
 </script>
 </body>
 </html>
