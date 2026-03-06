@@ -339,6 +339,9 @@
         <input type="number" id="damageFixed" value="1" min="1" max="100" placeholder="Fixed damage value" />
       </div>
       <div class="check-grid">
+        <label class="check-label"><input type="checkbox" id="rerollDmg1" /> Re-roll Damage 1s
+          <span class="tip" data-tip="If the damage roll is a 1, re-roll it once. Only applies when damage is a dice type.">?</span>
+        </label>
         <label class="check-label"><input type="checkbox" id="melta" /> Melta (half range)
           <span class="tip" data-tip="Adds D6 bonus damage at half range (avg +3.5)">?</span>
         </label>
@@ -861,6 +864,7 @@ function calculate() {
     rerollWound1:g('rerollWound1').checked,     rerollWoundAll:g('rerollWoundAll').checked,
     plusOneWound:g('plusOneWound').checked,     minusOneWound:g('minusOneWound').checked,
     devastatingWounds:g('devastatingWounds').checked, antiInfantry:g('antiInfantry').checked,
+    rerollDmg1:g('rerollDmg1').checked,
     melta:g('melta').checked,                   blast:g('blast').checked,
     hazardous:g('hazardous').checked,
     coverSave:g('coverSave').checked,           stealth:g('stealth').checked,
@@ -918,6 +922,8 @@ function calculate() {
   // 10th Ed sequence: damage is rolled per unsaved wound,
   // then FNP is rolled for each point of damage suffered.
   let dpw = dAvg(damageType, damageFixed);
+  // Re-roll 1s: on a 1 (prob 1/6) you reroll and get avg instead → gain (avg-1)/6
+  if (m.rerollDmg1 && damageType !== 'fixed') dpw = dpw + (dpw - 1) / 6;
   if (m.melta) dpw += 3.5;
 
   const pFnp = fnpVal ? cl((7-fnpVal)/6,0,1) : 0;
@@ -1143,6 +1149,7 @@ function runOneCombat(p) {
       // Crit wounds skip saves, deal damage as mortal wounds
       if (isCritWound && p.devastatingWounds) {
         let dmg = rollDice(p.damageType, p.damageFixed);
+        if (p.rerollDmg1 && dmg === 1 && p.damageType !== 'fixed') dmg = rollDice(p.damageType, p.damageFixed);
         if (p.melta) dmg += dRoll(6);
         for (let pt = 0; pt < dmg; pt++) {
           if (p.mwNegate > 0 && dRoll(6) >= p.mwNegate) continue;
@@ -1161,6 +1168,7 @@ function runOneCombat(p) {
 
       // ── DAMAGE + FNP ────────────────────────────────
       let dmg = rollDice(p.damageType, p.damageFixed);
+      if (p.rerollDmg1 && dmg === 1 && p.damageType !== 'fixed') dmg = rollDice(p.damageType, p.damageFixed);
       if (p.melta) dmg += dRoll(6);
       for (let pt = 0; pt < dmg; pt++) {
         if (p.fnp > 0 && dRoll(6) >= p.fnp) continue;
@@ -1223,6 +1231,7 @@ function simulate() {
     devastatingWounds:g('devastatingWounds').checked,
     antiInfantry:     g('antiInfantry').checked,
     targetInfantry:   g('targetInfantry').checked,
+    rerollDmg1:       g('rerollDmg1').checked,
     melta:            g('melta').checked,
     blast:            g('blast').checked,
     hazardous:        g('hazardous').checked,
@@ -1468,4 +1477,3 @@ function renderHistogram(results, avg, median) {
 </script>
 </body>
 </html>
-
