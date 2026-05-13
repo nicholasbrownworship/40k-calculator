@@ -139,6 +139,69 @@
     .footnote a { color:var(--brass-dim); text-decoration:none; }
     .footnote a:hover { color:var(--brass); }
 
+    /* ── EDITION TOGGLE ── */
+    .edition-row { display:flex; justify-content:center; gap:.45rem; margin-top:.65rem; }
+    .ed-btn { padding:.22rem .7rem; background:var(--surface); border:1px solid var(--border); border-radius:2px; color:var(--text-dim); font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; transition:all .15s; }
+    .ed-btn.active { background:var(--brass); border-color:var(--brass); color:#000; font-weight:700; }
+    .ed-btn.soon { cursor:default; opacity:.42; }
+    .edition-11-notice { background:rgba(196,154,42,.07); border:1px solid var(--brass-dim); border-radius:3px; padding:.55rem 1rem; margin-bottom:1rem; font-size:.76rem; color:var(--brass); text-align:center; display:none; line-height:1.5; }
+
+    /* ── UNIT CARDS ── */
+    .unit-cards { display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; margin-top:.85rem; }
+    @media(max-width:600px){ .unit-cards{ grid-template-columns:1fr; } }
+    .unit-card { background:var(--surface); border:1px solid var(--border); border-radius:3px; overflow:hidden; display:none; }
+    .unit-card.visible { display:block; }
+    .unit-card-inner { display:flex; gap:.65rem; padding:.65rem; }
+    .unit-card-img-col { flex-shrink:0; display:flex; flex-direction:column; gap:3px; }
+    .unit-card-img { width:80px; height:80px; object-fit:cover; border-radius:3px; border:1px solid var(--border); background:var(--panel); display:block; }
+    .unit-img-btn { width:80px; padding:.2rem 0; text-align:center; font-size:.58rem; letter-spacing:.08em; text-transform:uppercase; color:var(--brass-dim); background:none; border:1px solid var(--border); border-radius:2px; cursor:pointer; font-family:'Rajdhani',sans-serif; transition:all .15s; }
+    .unit-img-btn:hover { color:var(--brass); border-color:var(--brass-dim); }
+    .unit-card-body { flex:1; min-width:0; }
+    .unit-card-name { font-family:'Cinzel',serif; font-size:.72rem; font-weight:700; color:var(--accent); letter-spacing:.06em; margin-bottom:.42rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .unit-stat-row { display:flex; flex-wrap:wrap; gap:.2rem; margin-bottom:.32rem; }
+    .ustat { background:var(--panel); border:1px solid var(--border); border-radius:2px; padding:.08rem .3rem; text-align:center; min-width:28px; }
+    .ustat-lbl { display:block; font-size:.48rem; letter-spacing:.07em; text-transform:uppercase; color:var(--brass-dim); line-height:1; margin-bottom:.04rem; }
+    .ustat-val { display:block; font-size:.76rem; font-weight:700; color:var(--text); line-height:1.2; }
+    .unit-card-role { font-size:.6rem; color:var(--text-dim); letter-spacing:.06em; text-transform:uppercase; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .unit-img-url-row { padding:.35rem .65rem .5rem; border-top:1px solid var(--border); display:none; }
+    .unit-img-url-row input { width:100%; background:var(--panel); border:1px solid var(--border); border-radius:2px; color:var(--text); font-family:'Rajdhani',sans-serif; font-size:.72rem; padding:.22rem .4rem; outline:none; }
+    .unit-img-url-row input:focus { border-color:var(--brass); }
+    .unit-img-url-row input::placeholder { color:var(--text-dim); font-size:.68rem; }
+
+    /* ── DICE POOL ── */
+    .dice-pool-wrap { background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:1.1rem 1.25rem 1.25rem; margin-top:1.25rem; position:relative; display:none; }
+    .dice-pool-wrap::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:4px 4px 0 0; background:linear-gradient(to right,var(--brass-dim),var(--accent),var(--brass-dim)); }
+    .dice-pool-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:.9rem; padding-bottom:.6rem; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:.5rem; }
+    .dice-pool-title { font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); }
+    .dice-roll-btn { padding:.35rem .9rem; background:linear-gradient(160deg,var(--brass-dim),var(--brass)); border:1px solid var(--brass); border-radius:3px; color:#000; font-family:'Cinzel',serif; font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; transition:all .18s; }
+    .dice-roll-btn:hover { box-shadow:0 0 14px rgba(196,154,42,.4); transform:translateY(-1px); }
+    .dice-roll-btn:active { transform:translateY(0); }
+    .dice-phases { display:flex; flex-direction:column; gap:.8rem; }
+    .dice-phase-row { }
+    .dph-label { font-size:.6rem; letter-spacing:.13em; text-transform:uppercase; color:var(--text-dim); font-weight:700; margin-bottom:.32rem; display:flex; align-items:center; gap:.45rem; flex-wrap:wrap; }
+    .dph-tag { padding:.08rem .38rem; border-radius:2px; font-size:.58rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+    .dph-summary { font-family:'Rajdhani',sans-serif; font-size:.8rem; font-weight:700; color:var(--text); }
+    .dph-dice-row { display:flex; flex-wrap:wrap; gap:5px; align-items:center; min-height:38px; }
+    .dph-more { font-size:.7rem; color:var(--text-dim); padding:.15rem .3rem; }
+    .dph-empty { font-size:.72rem; color:var(--text-dim); font-style:italic; }
+    .dice-result-badge { margin-top:.75rem; padding:.45rem .7rem; background:var(--surface); border:1px solid var(--border); border-radius:3px; display:flex; gap:1.2rem; flex-wrap:wrap; align-items:center; }
+    .drb-item { display:flex; align-items:baseline; gap:.35rem; }
+    .drb-val { font-family:'Cinzel',serif; font-weight:700; font-size:1.1rem; color:var(--accent); }
+    .drb-val.dmg { color:var(--red-bright); font-size:1.4rem; }
+    .drb-lbl { font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim); }
+    .dice-legend { display:flex; flex-wrap:wrap; gap:.7rem; margin-top:.7rem; padding-top:.65rem; border-top:1px solid var(--border); font-size:.64rem; color:var(--text-dim); align-items:center; }
+    .dice-legend-item { display:flex; align-items:center; gap:.28rem; }
+    /* Die SVG element */
+    .die-svg { display:inline-block; vertical-align:middle; cursor:default; }
+    .die-svg:hover { transform:scale(1.14) rotate(4deg); transition:transform .15s; }
+    @keyframes diceRoll {
+      0%   { transform:rotate(-28deg) scale(1.28); opacity:.25; }
+      35%  { transform:rotate(16deg) scale(.86); opacity:.9; }
+      68%  { transform:rotate(-6deg) scale(1.07); opacity:1; }
+      100% { transform:rotate(0) scale(1); opacity:1; }
+    }
+    .die-rolling { animation:diceRoll .38s ease-out forwards; }
+
     /* ── SETUP NOTICE ── */
     .setup-notice { background:rgba(196,154,42,.07); border:1px solid var(--brass-dim); border-radius:3px; padding:.7rem 1rem; margin-top:.6rem; font-size:.78rem; color:var(--text-dim); line-height:1.6; display:none; }
     .setup-notice strong { color:var(--accent); }
@@ -176,7 +239,16 @@
   <div class="header">
     <div class="header-rule"><span class="skull">☠</span></div>
     <h1>WARHAMMER 40,000<br>COMBAT CALCULATOR</h1>
-    <p class="header-sub">Average Damage &amp; Attack Resolution · 10th Edition</p>
+    <p class="header-sub">Average Damage &amp; Attack Resolution</p>
+    <div class="edition-row">
+      <button class="ed-btn active" id="ed10" onclick="setEdition('10th')">10th Edition</button>
+      <button class="ed-btn soon" id="ed11" onclick="setEdition('11th')" title="11th Edition — rules will be configured on release">11th Edition ⟳</button>
+    </div>
+  </div>
+
+  <!-- 11th Edition coming-soon notice -->
+  <div class="edition-11-notice" id="ed11Notice">
+    ⚙ 11th Edition selected — rules &amp; datasheet format will be updated on release. Currently running on 10th Edition calculations. All data structures are ready to be extended.
   </div>
 
   <!-- UNIT SEARCH -->
@@ -223,6 +295,44 @@
           <div class="sdrop" id="defDrop"></div>
         </div>
         <div class="search-status" id="defStatus"></div>
+      </div>
+    </div>
+
+    <!-- Unit cards — shown after unit is selected -->
+    <div class="unit-cards" id="unitCards">
+      <!-- Attacker card -->
+      <div class="unit-card" id="atkCard">
+        <div class="unit-card-inner">
+          <div class="unit-card-img-col">
+            <img class="unit-card-img" id="atkCardImg" src="" alt="" />
+            <button class="unit-img-btn" onclick="toggleImgInput('atk')">⤢ Image URL</button>
+          </div>
+          <div class="unit-card-body">
+            <div class="unit-card-name" id="atkCardName"></div>
+            <div class="unit-stat-row" id="atkCardStats"></div>
+            <div class="unit-card-role" id="atkCardRole"></div>
+          </div>
+        </div>
+        <div class="unit-img-url-row" id="atkImgUrlRow">
+          <input type="url" id="atkImgUrl" placeholder="Paste any image URL from the web…" oninput="setCardImg('atk', this.value)" />
+        </div>
+      </div>
+      <!-- Defender card -->
+      <div class="unit-card" id="defCard">
+        <div class="unit-card-inner">
+          <div class="unit-card-img-col">
+            <img class="unit-card-img" id="defCardImg" src="" alt="" />
+            <button class="unit-img-btn" onclick="toggleImgInput('def')">⤢ Image URL</button>
+          </div>
+          <div class="unit-card-body">
+            <div class="unit-card-name" id="defCardName"></div>
+            <div class="unit-stat-row" id="defCardStats"></div>
+            <div class="unit-card-role" id="defCardRole"></div>
+          </div>
+        </div>
+        <div class="unit-img-url-row" id="defImgUrlRow">
+          <input type="url" id="defImgUrl" placeholder="Paste any image URL from the web…" oninput="setCardImg('def', this.value)" />
+        </div>
       </div>
     </div>
   </div><!-- /search-zone -->
@@ -456,6 +566,31 @@
   <div class="mode-toggle">
     <button class="mode-btn active" id="btnAvg" onclick="setMode('avg')">⚔ Average (Math)</button>
     <button class="mode-btn sim" id="btnSim" onclick="setMode('sim')">🎲 Simulate (10,000 Rolls)</button>
+    <button class="mode-btn" id="btnDice" onclick="rollDiceVisual()">⚀ Roll Dice Pool</button>
+  </div>
+
+  <!-- DICE POOL VISUALISATION -->
+  <div class="dice-pool-wrap" id="dicePoolWrap">
+    <div class="dice-pool-head">
+      <span class="dice-pool-title">⚀ Dice Pool — Single Combat Round</span>
+      <button class="dice-roll-btn" onclick="rollDiceVisual()">↻ Roll Again</button>
+    </div>
+    <div class="dice-phases" id="dicePhases"></div>
+    <div class="dice-legend">
+      <span class="dice-legend-item">
+        <svg width="14" height="14" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="2.5" fill="rgba(46,204,113,.15)" stroke="#2ecc71" stroke-width="1.2"/><circle cx="7" cy="7" r="2.2" fill="#2ecc71"/></svg>
+        Hit / Success
+      </span>
+      <span class="dice-legend-item">
+        <svg width="14" height="14" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="2.5" fill="rgba(184,50,40,.15)" stroke="#e04030" stroke-width="1.2"/><circle cx="7" cy="7" r="2.2" fill="#e04030"/></svg>
+        Miss / Fail
+      </span>
+      <span class="dice-legend-item">
+        <svg width="14" height="14" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="2.5" fill="rgba(240,208,112,.15)" stroke="#f0d070" stroke-width="1.2"/><circle cx="7" cy="7" r="2.2" fill="#f0d070"/></svg>
+        Critical
+      </span>
+      <span class="dice-legend-item" style="color:var(--text-dim);font-size:.62rem;margin-left:.3rem">Save dice: green pip = save failed (wound gets through)</span>
+    </div>
   </div>
 
   <!-- RESULTS -->
@@ -515,7 +650,7 @@
 
   <p class="footnote">
     Data sourced from <a href="https://wahapedia.ru" target="_blank">Wahapedia</a> ·
-    Not affiliated with Games Workshop · 10th Edition ·
+    Not affiliated with Games Workshop · <span id="footerEdition">10th Edition</span> ·
     All results are <em>statistical averages</em> ·
     <a href="https://github.com/" target="_blank">View on GitHub</a>
   </p>
@@ -663,6 +798,7 @@ function selectUnit(side, dsId, name) {
   highlighted[side] = -1;
   if (side === 'atk') applyAttacker(dsId, name);
   else                applyDefender(dsId, name);
+  updateUnitCard(side, dsId, name);
 }
 
 // ── Apply attacker ─────────────────────────────────
@@ -779,6 +915,94 @@ document.addEventListener('click', e => {
 });
 
 window.addEventListener('DOMContentLoaded', loadDB);
+
+// ═══════════════════════════════════════════════════
+//  EDITION MANAGEMENT
+// ═══════════════════════════════════════════════════
+let currentEdition = '10th';
+
+function setEdition(ed) {
+  currentEdition = ed;
+  document.getElementById('ed10').classList.toggle('active', ed === '10th');
+  document.getElementById('ed11').classList.toggle('active', ed === '11th');
+  document.getElementById('ed11Notice').style.display = (ed === '11th') ? 'block' : 'none';
+  document.getElementById('footerEdition').textContent = ed + ' Edition';
+}
+
+// ═══════════════════════════════════════════════════
+//  UNIT CARDS (datasheet display with images)
+// ═══════════════════════════════════════════════════
+
+// Skull SVG used as placeholder when no image is available
+const PLACEHOLDER_SVG = 'data:image/svg+xml,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">' +
+  '<rect width="80" height="80" fill="#18181e"/>' +
+  '<text x="40" y="52" text-anchor="middle" fill="#2a2a36" font-size="40" font-family="serif">☠</text>' +
+  '</svg>'
+);
+
+function updateUnitCard(side, dsId, name) {
+  const card = document.getElementById(side + 'Card');
+  card.classList.add('visible');
+
+  // Name
+  document.getElementById(side + 'CardName').textContent = name;
+
+  // Model stats row: M / T / SV / W / Ld / OC
+  const models = getModels(dsId);
+  const statsEl = document.getElementById(side + 'CardStats');
+  if (models.length) {
+    const m = models[0];
+    const statDefs = [
+      { k:'M', l:'M' }, { k:'T', l:'T' }, { k:'Sv', l:'SV' },
+      { k:'W', l:'W' }, { k:'Ld', l:'Ld' }, { k:'OC', l:'OC' }
+    ];
+    statsEl.innerHTML = statDefs.map(s => {
+      const v = m[s.k] || '–';
+      return `<div class="ustat"><span class="ustat-lbl">${s.l}</span><span class="ustat-val">${v}</span></div>`;
+    }).join('');
+  } else {
+    statsEl.innerHTML = '';
+  }
+
+  // Role + faction
+  const ds = DB.datasheets.find(d => d.id === dsId);
+  const roleEl = document.getElementById(side + 'CardRole');
+  if (ds) {
+    const parts = [];
+    if (ds.role) parts.push(ds.role);
+    if (ds.faction_id) parts.push(getFaction(ds.faction_id));
+    roleEl.textContent = parts.join(' · ');
+  }
+
+  // Image: try Wahapedia's datasheet image CDN pattern; fall back to skull placeholder
+  const imgEl = document.getElementById(side + 'CardImg');
+  imgEl.style.opacity = '0.35';
+  imgEl.onerror = () => {
+    imgEl.src = PLACEHOLDER_SVG;
+    imgEl.style.opacity = '0.5';
+    imgEl.onerror = null;
+  };
+  imgEl.onload = () => { imgEl.style.opacity = '1'; imgEl.onload = null; };
+  imgEl.src = `https://wahapedia.ru/wh40k10ed/img/${dsId}.jpg`;
+}
+
+function toggleImgInput(side) {
+  const row = document.getElementById(side + 'ImgUrlRow');
+  const show = row.style.display !== 'block';
+  row.style.display = show ? 'block' : 'none';
+  if (show) document.getElementById(side + 'ImgUrl').focus();
+}
+
+function setCardImg(side, url) {
+  const trimmed = url.trim();
+  if (!trimmed) return;
+  const imgEl = document.getElementById(side + 'CardImg');
+  imgEl.style.opacity = '0.4';
+  imgEl.onerror = () => { imgEl.style.opacity = '0.3'; imgEl.onerror = null; };
+  imgEl.onload  = () => { imgEl.style.opacity = '1';   imgEl.onload  = null; };
+  imgEl.src = trimmed;
+}
 
 // ═══════════════════════════════════════════════════
 //  COMBAT MATHS
@@ -1495,6 +1719,328 @@ function renderHistogram(results, avg, median) {
   canvas.onmouseleave = () => {
     tooltip.style.display = 'none';
   };
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DICE VISUALISATION
+// ═══════════════════════════════════════════════════════════
+
+// Pip coordinates inside a 32×32 SVG viewBox for faces 1–6
+const DIE_PIPS = {
+  1: [[16,16]],
+  2: [[9,9],[23,23]],
+  3: [[9,9],[16,16],[23,23]],
+  4: [[9,9],[23,9],[9,23],[23,23]],
+  5: [[9,9],[23,9],[16,16],[9,23],[23,23]],
+  6: [[9,9],[23,9],[9,16],[23,16],[9,23],[23,23]]
+};
+
+// Build a single SVG die face. state = 'success'|'fail'|'crit'|'neutral'
+function makeDieSVG(value, state, rolling) {
+  const border = state === 'success' ? '#2ecc71'
+               : state === 'crit'    ? '#f0d070'
+               : state === 'fail'    ? '#e04030'
+               :                       '#3a3a50';
+  const fill   = state === 'success' ? 'rgba(46,204,113,.13)'
+               : state === 'crit'    ? 'rgba(240,208,112,.13)'
+               : state === 'fail'    ? 'rgba(184,50,40,.13)'
+               :                       'rgba(30,30,42,.7)';
+
+  let interior;
+  if (typeof value === 'number' && DIE_PIPS[value]) {
+    interior = DIE_PIPS[value].map(([cx,cy]) =>
+      `<circle cx="${cx}" cy="${cy}" r="3.2" fill="${border}"/>`
+    ).join('');
+  } else {
+    // Special labels: 'L' (lethal), 'T' (torrent), or numbers > 6
+    const label = typeof value === 'number' ? String(value) : value;
+    interior = `<text x="16" y="16" text-anchor="middle" dominant-baseline="central" ` +
+               `fill="${border}" font-family="Cinzel,serif" font-weight="800" font-size="${label.length > 1 ? 9 : 11}">${label}</text>`;
+  }
+
+  const cls = 'die-svg' + (rolling ? ' die-rolling' : '');
+  return `<svg class="${cls}" width="34" height="34" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">` +
+    `<rect x="1.5" y="1.5" width="29" height="29" rx="5" fill="${fill}" stroke="${border}" stroke-width="1.5"/>` +
+    interior + `</svg>`;
+}
+
+const MAX_DICE_PER_PHASE = 30; // cap before showing "+N more"
+
+// Run one combat and record every die rolled, phase by phase
+function runOneCombatVisual(p) {
+  const critThreshold = p.critOn5 ? 5 : 6;
+  let totalDamage = 0;
+  const hitDice = [], woundDice = [], saveDice = [], damageDice = [];
+
+  let totalAtk = rollDice(p.attacksType, p.attacksFixed) * p.numModels;
+  if (p.blast) {
+    if      (p.defModels >= 11) totalAtk = Math.max(totalAtk, p.numModels * 6);
+    else if (p.defModels >= 6)  totalAtk = Math.max(totalAtk, p.numModels * 3);
+  }
+
+  for (let atk = 0; atk < totalAtk; atk++) {
+    let hitCount = 0;
+    let isCritHit = false;
+
+    if (p.torrent) {
+      hitCount = 1;
+      hitDice.push({ value: 'T', state: 'success' });
+    } else {
+      let skillNeeded = p.skill;
+      if (p.plusOneHit)     skillNeeded = Math.max(2, skillNeeded - 1);
+      if (p.minusOneHit)    skillNeeded = Math.min(6, skillNeeded + 1);
+      if (p.stealth)        skillNeeded = Math.min(6, skillNeeded + 1);
+      if (p.smokeLaunchers) skillNeeded = Math.min(6, skillNeeded + 1);
+      if (p.heavyWeapon)    skillNeeded = Math.max(2, skillNeeded - 1);
+
+      let roll = dRoll(6);
+      if      (roll === 1 && p.rerollHit1)             roll = dRoll(6);
+      else if (roll < skillNeeded && p.rerollHitAll)   roll = dRoll(6);
+
+      isCritHit = (roll >= critThreshold);
+      const hit  = (roll >= skillNeeded);
+      hitDice.push({ value: roll, state: isCritHit ? 'crit' : (hit ? 'success' : 'fail') });
+      if (hit) hitCount = 1;
+    }
+
+    if (hitCount === 0) continue;
+
+    if (!p.torrent && isCritHit) {
+      if      (p.sustainedHits2) hitCount += 2;
+      else if (p.sustainedHits1) hitCount += 1;
+    }
+
+    for (let h = 0; h < hitCount; h++) {
+      const isLethalWound = (h === 0 && isCritHit && p.lethalHits && !p.torrent);
+      let wounded = false, isCritWound = false;
+
+      if (isLethalWound) {
+        wounded = true;
+        woundDice.push({ value: 'L', state: 'crit' });
+      } else {
+        let wThr;
+        if      (p.strength >= p.toughness * 2) wThr = 2;
+        else if (p.strength > p.toughness)      wThr = 3;
+        else if (p.strength === p.toughness)    wThr = 4;
+        else if (p.strength * 2 <= p.toughness) wThr = 6;
+        else                                    wThr = 5;
+
+        if (p.plusOneWound)   wThr = Math.max(2, wThr - 1);
+        if (p.minusOneWound)  wThr = Math.min(6, wThr + 1);
+        if (p.woundModMinus1) wThr = Math.min(6, wThr + 1);
+
+        const antiCritThr = (p.antiInfantry && p.targetInfantry) ? 4 : critThreshold;
+        let wRoll = dRoll(6);
+        if      (wRoll === 1 && p.rerollWound1)                    wRoll = dRoll(6);
+        else if (wRoll < wThr && (p.rerollWoundAll || p.twinLinked)) wRoll = dRoll(6);
+
+        isCritWound = (wRoll >= antiCritThr);
+        wounded     = (wRoll >= wThr);
+        woundDice.push({ value: wRoll, state: isCritWound ? 'crit' : (wounded ? 'success' : 'fail') });
+      }
+
+      if (!wounded) continue;
+
+      // Devastating Wounds: crit wound → mortal wounds, skip save
+      if (isCritWound && p.devastatingWounds) {
+        let dmg = rollDice(p.damageType, p.damageFixed);
+        if (p.damageType !== 'fixed') {
+          if (p.rerollDmgAll)             dmg = rollDice(p.damageType, p.damageFixed);
+          else if (p.rerollDmg1 && dmg===1) dmg = rollDice(p.damageType, p.damageFixed);
+        }
+        if (p.melta) dmg += dRoll(6);
+        damageDice.push({ value: Math.min(dmg, 99), state: 'crit' });
+        for (let pt = 0; pt < dmg; pt++) {
+          if (p.mwNegate > 0 && dRoll(6) >= p.mwNegate) continue;
+          if (p.fnp > 0      && dRoll(6) >= p.fnp)      continue;
+          totalDamage++;
+        }
+        continue;
+      }
+
+      // Saving throw
+      let saveThr = p.armourSave + p.ap;
+      if (p.coverSave)                                 saveThr = Math.max(2, saveThr - 1);
+      if (p.invulnSave > 0 && p.invulnSave < saveThr) saveThr = p.invulnSave;
+
+      if (saveThr <= 6) {
+        const sRoll = dRoll(6);
+        const saved  = (sRoll >= saveThr);
+        // Green pip = save FAILED (wound gets through — good for attacker)
+        saveDice.push({ value: sRoll, state: saved ? 'fail' : 'success' });
+        if (saved) continue;
+      }
+
+      // Damage roll
+      let dmg = rollDice(p.damageType, p.damageFixed);
+      if (p.damageType !== 'fixed') {
+        if (p.rerollDmgAll)               dmg = rollDice(p.damageType, p.damageFixed);
+        else if (p.rerollDmg1 && dmg===1) dmg = rollDice(p.damageType, p.damageFixed);
+      }
+      if (p.melta) dmg += dRoll(6);
+      damageDice.push({ value: Math.min(dmg, 99), state: 'success' });
+      for (let pt = 0; pt < dmg; pt++) {
+        if (p.fnp > 0 && dRoll(6) >= p.fnp) continue;
+        totalDamage++;
+      }
+    }
+  }
+
+  // Direct mortal wounds (record but don't visualise separately for clarity)
+  const rawMW = p.mortalWoundsFlat
+    + (p.mortalWoundsType !== 'none' ? rollDice(p.mortalWoundsType, 0) : 0);
+  for (let pt = 0; pt < rawMW; pt++) {
+    if (p.mwNegate > 0 && dRoll(6) >= p.mwNegate) continue;
+    if (p.fnp > 0      && dRoll(6) >= p.fnp)      continue;
+    totalDamage++;
+  }
+
+  // Compute wound threshold string for label
+  function wThrStr() {
+    let t, s = p.strength, tg = p.toughness;
+    if(s>=tg*2)t=2; else if(s>tg)t=3; else if(s===tg)t=4; else if(s*2<=tg)t=6; else t=5;
+    if(p.plusOneWound) t=Math.max(2,t-1);
+    if(p.minusOneWound||p.woundModMinus1) t=Math.min(6,t+1);
+    return t + '+';
+  }
+  function saveThrStr() {
+    let t=p.armourSave+p.ap;
+    if(p.coverSave) t=Math.max(2,t-1);
+    if(p.invulnSave>0&&p.invulnSave<t) t=p.invulnSave;
+    return t<=6 ? 'fail <'+t : 'no save';
+  }
+
+  return {
+    totalDamage, totalAtk,
+    phases: [
+      {
+        name: 'Hit Rolls', tagColor: '#c03228',
+        tagLabel: p.torrent ? 'Torrent' : 'Need ' + p.skill + '+',
+        dice: hitDice,
+        summary: p.torrent
+          ? totalAtk + ' auto-hits'
+          : hitDice.filter(d=>d.state!=='fail').length + ' / ' + hitDice.length + ' hit'
+      },
+      {
+        name: 'Wound Rolls', tagColor: '#c49a2a',
+        tagLabel: 'Need ' + wThrStr(),
+        dice: woundDice,
+        summary: woundDice.filter(d=>d.state!=='fail').length + ' / ' + woundDice.length + ' wound'
+      },
+      {
+        name: 'Save Rolls', tagColor: '#4070c0',
+        tagLabel: saveThrStr(),
+        dice: saveDice,
+        summary: saveDice.length
+          ? saveDice.filter(d=>d.state==='success').length + ' / ' + saveDice.length + ' fail'
+          : 'no saves rolled'
+      },
+      {
+        name: 'Damage Rolls', tagColor: '#2ecc71',
+        tagLabel: p.damageType === 'fixed' ? 'Fixed ' + p.damageFixed : p.damageType.toUpperCase(),
+        dice: damageDice,
+        summary: totalDamage + ' total damage'
+      }
+    ]
+  };
+}
+
+// Render the dice pool panel from a visual combat result
+function renderDicePool(data) {
+  const wrap      = document.getElementById('dicePoolWrap');
+  const container = document.getElementById('dicePhases');
+  wrap.style.display = 'block';
+
+  let html = '';
+  for (const ph of data.phases) {
+    const shown = ph.dice.slice(0, MAX_DICE_PER_PHASE);
+    const extra = ph.dice.length - shown.length;
+
+    const diceHtml = shown.length > 0
+      ? shown.map(d => `<span class="die-wrap">${makeDieSVG(d.value, d.state, true)}</span>`).join('')
+      : `<span class="dph-empty">—</span>`;
+
+    const moreHtml = extra > 0
+      ? `<span class="dph-more">+${extra} more…</span>`
+      : '';
+
+    html +=
+      `<div class="dice-phase-row">` +
+        `<div class="dph-label">` +
+          `<span class="dph-tag" style="background:${ph.tagColor}22;color:${ph.tagColor};border:1px solid ${ph.tagColor}55">${ph.tagLabel}</span>` +
+          `<span>${ph.name}</span>` +
+          `<span class="dph-summary">${ph.summary}</span>` +
+        `</div>` +
+        `<div class="dph-dice-row">${diceHtml}${moreHtml}</div>` +
+      `</div>`;
+  }
+
+  html +=
+    `<div class="dice-result-badge">` +
+      `<span class="drb-item"><span class="drb-val">${data.totalAtk}</span><span class="drb-lbl">Attacks this roll</span></span>` +
+      `<span class="drb-item"><span class="drb-val dmg">${data.totalDamage}</span><span class="drb-lbl">Damage dealt</span></span>` +
+    `</div>`;
+
+  container.innerHTML = html;
+
+  // Stagger die animation delays so they appear to cascade in
+  container.querySelectorAll('.die-rolling').forEach((el, i) => {
+    el.style.animationDelay = Math.min(i * 18, 500) + 'ms';
+  });
+}
+
+// Collect params from form and run one visual roll
+function rollDiceVisual() {
+  const g = id => document.getElementById(id);
+  const p = {
+    numModels:         parseInt(g('numModels').value)||1,
+    attacksType:       g('attacksType').value,
+    attacksFixed:      parseFloat(g('attacksFixed').value)||1,
+    skill:             parseInt(g('skill').value),
+    strength:          parseInt(g('strength').value),
+    ap:                parseInt(g('ap').value),
+    damageType:        g('damageType').value,
+    damageFixed:       parseFloat(g('damageFixed').value)||1,
+    toughness:         parseInt(g('toughness').value),
+    armourSave:        parseInt(g('armourSave').value),
+    invulnSave:        parseInt(g('invulnSave').value),
+    fnp:               parseInt(g('fnp').value),
+    defModels:         parseInt(g('defModels').value)||1,
+    mwNegate:          parseInt(g('mwNegate').value),
+    mortalWoundsFlat:  parseFloat(g('mortalWoundsFlat').value)||0,
+    mortalWoundsType:  g('mortalWoundsType').value,
+    rerollHit1:        g('rerollHit1').checked,
+    rerollHitAll:      g('rerollHitAll').checked,
+    plusOneHit:        g('plusOneHit').checked,
+    minusOneHit:       g('minusOneHit').checked,
+    critOn5:           g('critOn5').checked,
+    sustainedHits1:    g('sustainedHits1').checked,
+    sustainedHits2:    g('sustainedHits2').checked,
+    lethalHits:        g('lethalHits').checked,
+    torrent:           g('torrent').checked,
+    heavyWeapon:       g('heavyWeapon').checked,
+    rerollWound1:      g('rerollWound1').checked,
+    rerollWoundAll:    g('rerollWoundAll').checked,
+    twinLinked:        g('twinLinked').checked,
+    plusOneWound:      g('plusOneWound').checked,
+    minusOneWound:     g('minusOneWound').checked,
+    devastatingWounds: g('devastatingWounds').checked,
+    antiInfantry:      g('antiInfantry').checked,
+    targetInfantry:    g('targetInfantry').checked,
+    rerollDmg1:        g('rerollDmg1').checked,
+    rerollDmgAll:      g('rerollDmgAll').checked,
+    melta:             g('melta').checked,
+    blast:             g('blast').checked,
+    hazardous:         g('hazardous').checked,
+    coverSave:         g('coverSave').checked,
+    stealth:           g('stealth').checked,
+    smokeLaunchers:    g('smokeLaunchers').checked,
+    woundModMinus1:    g('woundModMinus1').checked,
+  };
+
+  const data = runOneCombatVisual(p);
+  renderDicePool(data);
+  document.getElementById('dicePoolWrap').scrollIntoView({ behavior:'smooth', block:'nearest' });
 }
 </script>
 </body>
